@@ -1,0 +1,8 @@
+aiohttp
+cchardet
+aiodns
+Brotli
+pyyaml
+dependency-injector
+pymemcache
+pandas
