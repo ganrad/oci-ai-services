@@ -64,7 +64,11 @@ async def inferStream(
             window_size = int(window_size)
  
     tmp = request.query.get("sensitivity"); sensitivity_str = tmp if tmp else DEF_SENSITIVITY
-    sensitivity = float(sensitivity_str)
+    # check if value is float
+    try:
+        sensitivity = float(sensitivity_str)
+    except ValueError:
+        sensitivity = float(DEF_SENSITIVITY)
 
     log.info(f"inferStream: Client ID=[{client_id}] - Input Params:\nOCID = {model_ocid}\nContent Type = {content_type}\nWindow Size = {window_size}\nSensitivity = {sensitivity}")
 

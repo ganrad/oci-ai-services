@@ -98,9 +98,9 @@ class AdService:
 
         logger.info(f"executeInference: Client ID=[{clientid}] - No. of rows received in request=[{df_data.shape[0]}]")
         #print(f"executeInference: --- df_data.info() ---\n{df_data.info()}")
-        #buffer = StringIO()
-        #df_data.info(buf=buffer)
-        #logger.debug(f"executeInference: --- Client ID=[{clientid}] ---\nData.info=[{buffer.getvalue()}]")
+        buffer = StringIO()
+        df_data.info(buf=buffer)
+        logger.debug(f"executeInference: --- Client ID=[{clientid}] ---\nData.info:\n{buffer.getvalue()}")
 
         idx = 0
         cols = df_data.dtypes
