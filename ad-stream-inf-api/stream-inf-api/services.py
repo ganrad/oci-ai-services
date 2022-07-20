@@ -18,10 +18,35 @@ from oci.config import from_file
 from oci.ai_anomaly_detection.anomaly_detection_client import AnomalyDetectionClient
 from oci.ai_anomaly_detection.models.embedded_detect_anomalies_request import EmbeddedDetectAnomaliesRequest
 from oci.exceptions import ServiceError
+
+from pymemcache.client.base import Client
+
 from .errors import StreamApiException
 from .backend.factory import StoreProviderFactory
+from .backend.store_providers import *
 
 logger = logging.getLogger(__name__)
+
+TEST_WINDOW_DATA = """0,853,9.8,2.7
+1,856,13.6,2.7
+2,853,11.8,2.7
+3,853,11.8,2.7
+4,853,7.9,2.7
+5,853,13.7,2.7
+6,853,11.8,2.7
+7,853,9.8,2.7
+8,853,17.7,2.7
+9,853,11.8,2.7
+10,853,11.8,2.7
+11,853,23.5,2.7
+12,853,9.8,2.7
+13,853,13.7,2.7
+14,853,23.5,2.7
+15,853,11.8,2.7
+16,853,11.8,2.7
+17,856,17.6,2.7
+18,856,17.7,2.7
+19,853,9.8,2.7"""
 
 class AdService:
 
@@ -65,27 +90,12 @@ class AdService:
         cache_key = clientid + ":" + ocid
 
         # retrieve window size dp's from backend store / cache
-        _backend_store = StoreProviderFactory(self.stream_context)
-        cache_str = """0,853,9.8,2.7
-1,856,13.6,2.7
-2,853,11.8,2.7
-3,853,11.8,2.7
-4,853,7.9,2.7
-5,853,13.7,2.7
-6,853,11.8,2.7
-7,853,9.8,2.7
-8,853,17.7,2.7
-9,853,11.8,2.7
-10,853,11.8,2.7
-11,853,23.5,2.7
-12,853,9.8,2.7
-13,853,13.7,2.7
-14,853,23.5,2.7
-15,853,11.8,2.7
-16,853,11.8,2.7
-17,856,17.6,2.7
-18,856,17.7,2.7
-19,853,9.8,2.7"""
+        _factory = StoreProviderFactory(self.stream_context)
+        store_client = _factory.getBackendInstance()
+        store_client.get_value(cache_key)
+        
+        #cache_str = memclient.get(cache_key)
+        cache_str = TEST_WINDOW_DATA
 
         pd.set_option("mode.chained_assignment",None) # Pandas: Ignore chained assignment warnings!
 
@@ -93,31 +103,33 @@ class AdService:
         data_str_io = StringIO(str(data,"utf-8"))
         df_data = pd.read_csv(data_str_io,sep=",")
 
-        # Use StringIO to read in cached (window size dp's) csv data
-        reader = csv.reader(StringIO(cache_str), delimiter=",")
-
         logger.info(f"executeInference: Client ID=[{clientid}] - No. of rows received in request=[{df_data.shape[0]}]")
         #print(f"executeInference: --- df_data.info() ---\n{df_data.info()}")
         buffer = StringIO()
         df_data.info(buf=buffer)
         logger.debug(f"executeInference: --- Client ID=[{clientid}] ---\nData.info:\n{buffer.getvalue()}")
 
-        idx = 0
-        cols = df_data.dtypes
-        for row in reader:
-            rowf = []
-            for index, value in enumerate(row):
-                if cols[index] == "int64":
-                    rowf.append(int(value))
-                elif cols[index] == "float64":
-                    rowf.append(float(value))
-                else:
-                    rowf.append(value) 
+        if cache_str and cache_str.strip():
+            # Use StringIO to read in cached (window size dp's) csv data
+            reader = csv.reader(StringIO(cache_str), delimiter=",")
 
-            # print(f"Window row: Index={idx}, Row={rowf}")
-            df_data = self.insertRow(idx,df_data,rowf)
-            idx += 1
-        logger.info(f"executeInference: Client ID={[clientid]} - No. of rows in inference data set after inserting window rows=[{df_data.shape[0]}]")
+            idx = 0
+            cols = df_data.dtypes
+            for row in reader:
+                rowf = []
+                for index, value in enumerate(row):
+                    if cols[index] == "int64":
+                        rowf.append(int(value))
+                    elif cols[index] == "float64":
+                        rowf.append(float(value))
+                    else:
+                        rowf.append(value) 
+
+                # print(f"Window row: Index={idx}, Row={rowf}")
+                df_data = self.insertRow(idx,df_data,rowf)
+                idx += 1
+
+            logger.info(f"executeInference: Client ID={[clientid]} - No. of rows in inference data set after inserting window rows=[{df_data.shape[0]}]")
 
         config = from_file(self.conf_file)
         ad_client = AnomalyDetectionClient(config,service_endpoint=self.api_endpoint)
@@ -163,6 +175,7 @@ class AdService:
             raise StreamApiException(clientid,ocid,se.target_service,se.status,se.code,se.message,se.operation_name,se.request_endpoint,se.client_version,se.timestamp)
 
         # Cache the window data set
+        store_client.set_value(cache_key,cache_str)
 
         # Print the request id for troubleshooting issues
         logger.info(f"executeInference: - End\nClient ID = {clientid}\nOCID = {ocid}\nRequestId = {service_obj.request_id}")

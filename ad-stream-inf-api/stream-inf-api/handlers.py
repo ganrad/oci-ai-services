@@ -87,9 +87,13 @@ async def inferStream(
                 sensitivity,
                 content_type,
                 data_bytes)
-        except StreamApiException as sae:
-            #log.error("inferStream: Encountered Exception",exc_info=True)
+        except (StreamApiException) as sae:
+            # log.exception("inferStream: Encountered Exception") # ,exc_info=True)
             return web.HTTPBadRequest(text=json.dumps(sae.__dict__))
+        except (Exception) as e:
+            log.exception(f"inferStream: Encountered Exception while serving request. Client ID=[{client_id}]")
+            return web.HTTPInternalServerError(text=f"Service handler={__name__}, encountered an exception while serving request.")
+
     else:
         log.info(f"inferStream: Client ID=[{client_id}] - No data sent in request")
         return web.HTTPBadRequest(text="No data sent in request")
