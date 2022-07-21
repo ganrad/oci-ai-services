@@ -7,4 +7,4 @@ store:
   provider_id: "Memcached"
 
 memcached:
-  host_port: "localhost:11211"
+  host_port: "localhost:45001"

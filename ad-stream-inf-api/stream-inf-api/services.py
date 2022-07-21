@@ -56,6 +56,8 @@ class AdService:
         self.compartment_id = compartment_id
         self.stream_context = stream_context
 
+        logger.info("__init__: AdService Initializer")
+
     # Function to insert row in the dataframe
     def insertRow(self,row_number, df, row_value):
         # Slice the upper half of the dataframe
@@ -80,38 +82,48 @@ class AdService:
         self,
         clientid,
         ocid,
-        window_s,
-        sensitivity,
-        ctnt_type,
-        data):
+        data,
+        **kwargs):
 
-        logger.info(f"executeInference: - BEGIN\nClient ID = {clientid}\nOCID = {ocid}")
+        logger.info(f"executeInference: BEGIN Client ID=[{clientid}]\n----\nOCID = {ocid}\n----")
+
+        # Unpack optional params
+        window_s = kwargs['window_s'] # Setting the window size will save an AD API call
+        sensitivity = kwargs['sensitivity'] # Change the default (0.5) sensitivity value
+        ctnt_type = kwargs['ctnt_type'] # Specify format of the payload - CSV or JSON
+        refresh_cache = kwargs['refresh_cache'] # Set this param to true to invalidate the cached entry
+
         # Set the cache key
         cache_key = clientid + ":" + ocid
 
         # retrieve window size dp's from backend store / cache
         _factory = StoreProviderFactory(self.stream_context)
         store_client = _factory.getBackendInstance()
-        store_client.get_value(cache_key)
+        if refresh_cache:
+            store_client.del_value(cache_key) # Delete the cached window dp's
+            cache_str = None
+        else:
+            cache_str = store_client.get_value(cache_key) # Imp: cache_str is read in as bytes
         
-        #cache_str = memclient.get(cache_key)
-        cache_str = TEST_WINDOW_DATA
+        # cache_str = TEST_WINDOW_DATA
 
         pd.set_option("mode.chained_assignment",None) # Pandas: Ignore chained assignment warnings!
 
         # Convert request data (bytes) to string so csv data can be read into a data frame
-        data_str_io = StringIO(str(data,"utf-8"))
+        data_str_io = StringIO(data.decode("UTF-8"))
         df_data = pd.read_csv(data_str_io,sep=",")
 
         logger.info(f"executeInference: Client ID=[{clientid}] - No. of rows received in request=[{df_data.shape[0]}]")
-        #print(f"executeInference: --- df_data.info() ---\n{df_data.info()}")
         buffer = StringIO()
         df_data.info(buf=buffer)
-        logger.debug(f"executeInference: --- Client ID=[{clientid}] ---\nData.info:\n{buffer.getvalue()}")
+        logger.debug(f"executeInference: Client ID=[{clientid}]\n----\nData.info:\n{buffer.getvalue()}\n----")
+
+        # Save the df_data type (dictionary) to cast updated data frame later
+        df_data_dict = df_data.dtypes.astype(str).to_dict()
 
         if cache_str and cache_str.strip():
-            # Use StringIO to read in cached (window size dp's) csv data
-            reader = csv.reader(StringIO(cache_str), delimiter=",")
+            # Use StringIO to read in cached (window size dp's) csv data. StringIO expects a str
+            reader = csv.reader(StringIO(cache_str.decode("UTF-8")), delimiter=",") #,"utf-8")), delimiter=",")
 
             idx = 0
             cols = df_data.dtypes
@@ -129,7 +141,11 @@ class AdService:
                 df_data = self.insertRow(idx,df_data,rowf)
                 idx += 1
 
-            logger.info(f"executeInference: Client ID={[clientid]} - No. of rows in inference data set after inserting window rows=[{df_data.shape[0]}]")
+            # Update the data frame column types to original types as they may have changed when adding rows from cache!
+            # print(f"df_data_dict: {df_data_dict}")
+            df_data = df_data.astype(df_data_dict)
+
+            logger.info(f"executeInference: Client ID=[{clientid}] - No. of rows in inference data set after inserting window rows=[{df_data.shape[0]}]")
 
         config = from_file(self.conf_file)
         ad_client = AnomalyDetectionClient(config,service_endpoint=self.api_endpoint)
@@ -151,9 +167,7 @@ class AdService:
 
         df_window_data = df_data.iloc[(df_data.shape[0] - window_size):]
         logger.info(f"executeInference: Client ID=[{clientid}] - No. of rows in window data frame=[{df_window_data.shape[0]}]")
-
         cache_str = df_window_data.to_csv(header=False,index=False)
-        logger.debug(f"executeInference: Client ID=[{clientid}] - Window data set (string) to cache:\n{cache_str}")
 
         data = str.encode(df_data.to_csv(header=True,index=False))
         logger.debug(f"executeInference: Client ID=[{clientid}] - Inference data set:\n" + df_data.to_csv(header=True,index=False))
@@ -178,11 +192,11 @@ class AdService:
         store_client.set_value(cache_key,cache_str)
 
         # Print the request id for troubleshooting issues
-        logger.info(f"executeInference: - End\nClient ID = {clientid}\nOCID = {ocid}\nRequestId = {service_obj.request_id}")
+        logger.info(f"executeInference: End Client ID={clientid}\n----\nOCID = {ocid}\nRequestId = {service_obj.request_id}\n----")
         return (service_obj.data)
 
     def getAdServiceHealth(self):
-        logger.debug("getAdServiceHealth: - End")
+        logger.debug("getAdServiceHealth: Begin")
         dt = datetime.datetime.now()
 
         return ({
