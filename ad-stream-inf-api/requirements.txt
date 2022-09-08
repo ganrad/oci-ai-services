@@ -6,3 +6,4 @@ pyyaml
 dependency-injector
 pymemcache
 pandas
+httpie

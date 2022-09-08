@@ -36,7 +36,7 @@ async def inferStream(
       request: web.Request,
       ad_service: AdService = Provide[Container.ad_service]
 ) -> web.Response:
-    log.debug("inferStream: - BEGIN")
+    log.info("inferStream: BEGIN")
 
     model_ocid = request.query.get("ocid")
     if model_ocid is None or model_ocid == "":
@@ -70,7 +70,9 @@ async def inferStream(
     except ValueError:
         sensitivity = float(DEF_SENSITIVITY)
 
-    log.info(f"inferStream: Client ID=[{client_id}] - Input Params:\nOCID = {model_ocid}\nContent Type = {content_type}\nWindow Size = {window_size}\nSensitivity = {sensitivity}")
+    tmp = request.query.get("refresh_cache"); recache = True if tmp and (tmp == "True" or tmp == "true") else False
+    
+    log.info(f"inferStream: Client ID=[{client_id}] - Input Params:\n----\nOCID = {model_ocid}\nContent Type = {content_type}\nWindow Size = {window_size}\nSensitivity = {sensitivity}\nRefresh Cache = {recache}\n----")
 
     if request.body_exists:
         content_length = request.content_length
@@ -83,18 +85,22 @@ async def inferStream(
             infer_results = ad_service.executeInference(
                 client_id,
                 model_ocid,
-                window_size,
-                sensitivity,
-                content_type,
-                data_bytes)
-        except StreamApiException as sae:
-            #log.error("inferStream: Encountered Exception",exc_info=True)
+                data_bytes,
+                window_s = window_size,
+                sensitivity = sensitivity,
+                ctnt_type = content_type,
+                refresh_cache = recache)
+        except (StreamApiException) as sae:
             return web.HTTPBadRequest(text=json.dumps(sae.__dict__))
+        except (Exception) as e:
+            log.exception(f"inferStream: Encountered Exception while serving request. Client ID=[{client_id}]")
+            return web.HTTPInternalServerError(text=f"Service handler=[{__name__}], encountered an exception while serving request.")
+
     else:
         log.info(f"inferStream: Client ID=[{client_id}] - No data sent in request")
         return web.HTTPBadRequest(text="No data sent in request")
 
-    log.debug("inferStream: - END")
+    log.info("inferStream: END")
     ad_results = str(infer_results)
 
     #return web.Response(text=json.dumps(ad_results,ensure_ascii=False))

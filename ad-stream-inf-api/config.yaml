@@ -1,5 +1,5 @@
 oci:
-  credential_store: "/Users/gagaradh/git-repos/la-releases/oci-config"
+  credential_store: "/home/gradhakrishnan/git-repos/oci-sdk-preview-2.67.1/oci-config"
   service_endpoint: "https://anomalydetection.aiservice.us-ashburn-1.oci.oraclecloud.com"
   compartment_id: "ocid1.compartment.oc1..aaaaaaaak2uxa2ww5k2xrqk7fccqgeubdwbnxf6h2mjvm5mbrdvf2ik2teoa"
 
@@ -7,4 +7,4 @@ store:
   provider_id: "Memcached"
 
 memcached:
-  host_port: "localhost:11211"
+  host_port: "localhost:45001"
