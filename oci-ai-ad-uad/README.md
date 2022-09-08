@@ -22,18 +22,23 @@ In this tutorial, we will go thru the following steps.
 3. Run inference and detect anomalies
 4. Confirm detected anomalies are actual anomalies in the OCI Console
 
-1. Review time series data patterns and anomaly types
+
+## 1. Review time series data patterns and anomaly types
    OCI Anomaly Detection Service can detect anomalies in different types of time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
 
    Refer to the table below for time series data patterns and anomaly types detected by OCI Anomaly Detection Service.
 
    - A data set containing seasonal patterns.  Detect anomalous spikes in the seasonal pattern.
+     OCI Anomaly Detection Service detects spikes and dips in time series data containing seasonal patterns. The univariate kernel does automatic window size detection and as a result anomalous spikes are detected as soon as they occur (no delay) with high precision as shown in the train and test graphs below.
+
      ![alt tag](./images/A-01.PNG)
 
      ![alt tag](./images/A-01.PNG)
 
    - A flat trend data set. Detect continuous anomalies.
+     OCI Anomaly Detection Service detects anomalies in flat (or constant) trend data as shown in the train and test graphs below. 
 
    - A continuously increasing linear trend data set. No anomalies detected (No false alarms!)
+     OCI Anomaly Detection Service detects 
 
    - A linear trend data set. Detect anamalous spikes and dips.
