@@ -1,27 +1,36 @@
-# Detect anomalies in Univariate time series data (signals)
+# Detect Anomalies in Univariate time series data (signals)
 
 This tutorial details the steps for detecting anomalies in **Univariate** signals using *OCI Anomaly Detection Service*.
 
 Univariate anomaly detection (UAD) refers to the problem of identifying anomalies in a single time series data.  A single time series data contains timestamped values for one signal (a.k.a metric or measure).
 
-At a high level, the process of detecting anomalies in time series data involves
-- Training a model with a **training** data set.
-  The training data set should ideally not contain any anomalies. It should contain values that were collected when the monitoried system/asset was operating under normal conditions.  It's ok to include data values that represent normal seasonal trends & other values that represent conditions considered normal. 
-- Using the trained model to detect anomalies with an **inference** data set.
-  The inference data set contains timestamped data values for a given signal typically collected by a sensor or software agent which is monitoring a target system/asset in real-time.
+At a high level, the process of detecting anomalies in time series data using OCI Anomaly Detection Service involves two simple steps
+- Training a model with a **Training** data set.
+  The training data set should ideally not contain any anomalies. It should contain values that were collected when the monitoried system/asset was operating under normal conditions.  It's ok to include data values that represent normal seasonal trends & other values that represent normal conditions. 
+- Using the trained model to detect anomalies with an **Inference** data set.
+  The inference data set contains timestamped data values for a given signal typically collected by a sensor or software agent which is monitoring a target system/asset (Physical or Virtual) in real-time.
 
 With OCI Anomaly Detection Service, users can
 - Train univariate anomaly detection models using different types of univariate time series data (See Section 1 below)
-- Detect different types of anomalies in time series data
-- Train models for up to 300 univariate signals using one data set
+- Detect different types of anomalies in time series data such as point, range and contextual anomalies
+- Train models for up to 300 univariate signals using one data set stored in an OCI Object Store file or OCI Autonomous Database table
 - Infer upon or detect anomalies in 300 individual time series data (~ signals) using a single **detect anomalies** api call
 
 In this tutorial, we will go thru the following steps.
 1. Review time series data patterns and anomaly types
-2. Train an Anomaly Detection Model
-3. Run inference and detect anomalies
-4. Confirm detected anomalies are actual anomalies in the OCI Console
+2. Review time series data sets for identifying different types of anomalies
+3. Train an Anomaly Detection Model using OCI Console
+4. Run inference and detect anomalies using OCI Console
+5. Confirm OCI Anomaly Detection Service has correctly identified the anomalies in the inference data set
 
+## Before You Begin
+To work on this tutorial, you must have the following
+- A paid Oracle Cloud Infrastructure (OCI) account, or a new accont with Oracle Cloud Promotions.  See [Request and Manage Free Oracle Cloud Promotions](https://docs.oracle.com/en-us/iaas/Content/GSG/Tasks/signingup.htm).
+- Administrator privilege for the OCI account
+- At least one user in your tenancy who wants to access Anomaly Detection Service. This user must be created in [IAM](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingusers.htm)
+
+## Pre-requisites
+- By default, only users in the **Administrators** group have access to all Anomaly Detection resources. If you are not an admin user, you will need to request your administrator to create OCI policies and assign them to your group.  Please refer to the instructions in the [About Anomaly Detection Policies](https://docs.oracle.com/en-us/iaas/Content/anomaly/using/policies.htm) page.
 
 ## 1. Review time series data patterns and anomaly types
    OCI Anomaly Detection Service can detect anomalies in different types of time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
