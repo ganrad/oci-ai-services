@@ -56,10 +56,11 @@ To work on this tutorial, you must have the following
      OCI Anomaly Detection Service detects anomalous values (spikes and dips) in linear time series data.
 
 ## 2. Review time series data sets
-   Here will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
+   In this section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
 
    Use Case | Description | Data Pattern | Anomaly Type | Data Sets
    -------- | ----------- | ------------ | ------------ | ---------
-   Network Service Usage | Identify anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | ./data/network_svc_usage_train.csv ./data/network_svc_usage_test.csv
-   Compute Service Usage | Identify anomalies in compute metrics for database VM - Memory Consumption | Increasing Linear trend | ./data/database_vm_train.csv ./data/database_vm_test.csv
-
+   Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Network Service Usage - Train](./data/network_svc_usage_train.csv) [Network Service Usage - Test](./data/network_svc_usage_test.csv)
+   Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [DB VM Mem Usage - Train](./data/database_vm_train.csv) [DB VM Mem Usage - Test](./data/database_vm_test.csv)
+   Horizon | | | |
+   Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Flat trend synthetic data - Train](./data/simple_flat_train.csv) [Flat trend synthetic data](./data/simple_flat_test.csv)
