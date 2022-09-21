@@ -17,13 +17,12 @@ With OCI Anomaly Detection Service, users can
 - Infer upon or detect anomalies in 300 individual time series data (~ signals) using a single **detect anomalies** api call
 
 In this tutorial, we will go thru the following steps.
-<!--ts-->
-  * 1. Review univariate time series data patterns and anomaly types
-  * 2. Review time series data sets
-  * 3. Train an Anomaly Detection Model using OCI Console
-  * 4. Run inference and detect anomalies using OCI Console
-  * 5. Confirm OCI Anomaly Detection Service has correctly identified the anomalies in the inference data set
-<!--te-->
+
+1. Review univariate time series data patterns and anomaly types
+2. Review time series data sets
+3. Train an Anomaly Detection Model using OCI Console
+4. Run inference and detect anomalies using OCI Console
+5. Confirm OCI Anomaly Detection Service has correctly identified the anomalies in the inference data set
 
 ## Before You Begin
 To work on this tutorial, you must have the following
@@ -37,7 +36,7 @@ To work on this tutorial, you must have the following
 ## 1. Review time series data patterns and anomaly types
    OCI Anomaly Detection Service can detect anomalies in different types/patterns of univariate time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
 
-   Refer to the table below for time series data patterns and anomaly types detected by OCI Anomaly Detection Service.
+   The section below describes the time series data patterns and anomaly types detected by OCI Anomaly Detection Service.
 
    - A data set containing seasonal patterns.
      OCI Anomaly Detection Service detects spikes and dips in time series data containing seasonal patterns. The univariate kernel does automatic window size detection and as a result anomalous spikes are detected as soon as they occur (no delay) with high precision as shown in the train and test graphs below.
@@ -60,7 +59,7 @@ To work on this tutorial, you must have the following
 
    Use Case | Description | Data Pattern | Anomaly Type | Data Sets
    -------- | ----------- | ------------ | ------------ | ---------
-   Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Network Service Usage - Train](./data/network_svc_usage_train.csv) [Network Service Usage - Test](./data/network_svc_usage_test.csv)
-   Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [DB VM Mem Usage - Train](./data/database_vm_train.csv) [DB VM Mem Usage - Test](./data/database_vm_test.csv)
+   Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
+   Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
    Horizon | | | |
-   Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Flat trend synthetic data - Train](./data/simple_flat_train.csv) [Flat trend synthetic data](./data/simple_flat_test.csv)
+   Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
