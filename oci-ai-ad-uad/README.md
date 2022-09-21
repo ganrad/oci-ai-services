@@ -1,4 +1,4 @@
-# Detect Anomalies in Univariate time series data (signals)
+# Detect Anomalies in Univariate Time Series Data
 
 This tutorial details the steps for detecting anomalies in **Univariate** signals using *OCI Anomaly Detection Service*.
 
