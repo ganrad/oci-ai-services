@@ -18,11 +18,11 @@ With OCI Anomaly Detection Service, users can
 
 In this tutorial, we will go thru the following steps.
 
-1. Review univariate time series data patterns and anomaly types
-2. Review time series data sets
-3. Train an Anomaly Detection Model using OCI Console
-4. Run inference and detect anomalies using OCI Console
-5. Confirm OCI Anomaly Detection Service has correctly identified the anomalies in the inference data set
+1. Review Univariate Time Series data patterns and Anomaly types
+2. Review Time Series data sets
+3. Train an Anomaly Detection Model
+4. Run inference and detect anomalies
+5. Confirm OCI Anomaly Detection Service Results
 
 ## Before You Begin
 To work on this tutorial, you must have the following
@@ -33,7 +33,7 @@ To work on this tutorial, you must have the following
 ## Pre-requisites
 - By default, only users in the **Administrators** group have access to all Anomaly Detection resources. If you are not an admin user, you will need to request your administrator to create OCI policies and assign them to your group.  Please refer to the instructions in the [About Anomaly Detection Policies](https://docs.oracle.com/en-us/iaas/Content/anomaly/using/policies.htm) page.
 
-## 1. Review time series data patterns and anomaly types
+## 1. Review Univariate Time Series data patterns and Anomaly types
    OCI Anomaly Detection Service can detect anomalies in different types/patterns of univariate time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
 
    The section below describes the time series data patterns and anomaly types detected by OCI Anomaly Detection Service.
@@ -54,7 +54,7 @@ To work on this tutorial, you must have the following
    - A linear trend data set. Detect anamalous spikes and dips.
      OCI Anomaly Detection Service detects anomalous values (spikes and dips) in linear time series data.
 
-## 2. Review time series data sets
+## 2. Review Time Series data sets
    In this section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
 
    Use Case | Description | Data Pattern | Anomaly Type | Data Sets
@@ -64,3 +64,9 @@ To work on this tutorial, you must have the following
    Horizon | | | |
    Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
    Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
+
+## 3. Train an Anomaly Detection Model
+
+## 4. Run inference and detect Anomalies
+
+## 5. Confirm OCI Anomaly Detection Service Results
