@@ -8,7 +8,7 @@ At a high level, the process of detecting anomalies in time series data using OC
 - Training a model with a **Training** data set.
   The training data set should ideally not contain any anomalies. It should contain values that were collected when the monitoried system/asset was operating under normal conditions.  It's ok to include data values that represent normal seasonal trends & other values that represent normal conditions. 
 - Using the trained model to detect anomalies with an **Inference** data set.
-  The inference data set contains timestamped data values for a given signal typically collected by a sensor or software agent which is monitoring a target system/asset (Physical or Virtual) in real-time.
+  The inference data set contains timestamped data values for a given signal typically collected by a sensor or software agent which is monitoring a physical or virtual system/asset in real-time.
 
 With OCI Anomaly Detection Service, users can
 - Train univariate anomaly detection models using different types of univariate time series data (See Section 1 below)
@@ -59,7 +59,8 @@ To work on this tutorial, you must have the following
 
    Use Case | Description | Data Pattern | Anomaly Type | Data Sets
    -------- | ----------- | ------------ | ------------ | ---------
-   Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
-   Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
+   Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
+   Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
    Horizon | | | |
+   Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
    Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
