@@ -64,7 +64,7 @@ To work on this tutorial, you must have the following
    -------- | ----------- | ------------ | ------------ | ---------
    Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
    Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
-   Dashboard metric monitor | Service identifies spike and dip anomalies in the process of user loading data into the dashboard. | Spikes and Dips | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)|
+   Dashboard metric monitor | Service identifies spike and dip anomalies in the process of user loading data into the dashboard. | Increasing or Decreasing Linear trend | Spikes and Dips | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)|
    Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/dashboard_metric_train.csv) [Test/Inference Data Set](./data/dashboard_metric_test.csv)
    Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
 
