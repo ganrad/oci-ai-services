@@ -32,6 +32,7 @@ To work on this tutorial, you must have the following
 
 ## Pre-requisites
 - By default, only users in the **Administrators** group have access to all Anomaly Detection resources. If you are not an admin user, you will need to request your administrator to create OCI policies and assign them to your group.  Please refer to the instructions in the [About Anomaly Detection Policies](https://docs.oracle.com/en-us/iaas/Content/anomaly/using/policies.htm) page.
+- You must have a compartment which you will be using to provision required resources while going through the labs in this tutorial. Refer to OCI documentation to learn about [Managing Compartments](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm).
 
 ## 1. Review Univariate Time Series data patterns and Anomaly types
    OCI Anomaly Detection Service can detect anomalies in different types/patterns of univariate time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
@@ -65,7 +66,74 @@ To work on this tutorial, you must have the following
    Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
    Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
 
+   Before proceeding with the next step, click on the data sets which you want to use for training Univariate AD models and save them to your local hard drive (on your PC). 
+
 ## 3. Train an Anomaly Detection Model
+   In this section, we will train an anomaly detection model using [OCI Console](cloud.oracle.com)
+   
+   1. Login to [OCI Console](cloud.oracle.com) using your credentials.
+
+      After logging into OCI, you should be see the home web page as shown in the screenshot below.
+
+      ![alt tag](./images/section-3-1.PNG)
+
+   2. Store the training data set in OCI Object Store Bucket
+
+      In this tutorial, we will use OCI Object Store Bucket to store training data set files. We will then use these files to train anomaly detection models.
+
+      Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
+
+      ![alt tag](./images/section-3-2-1.PNG)
+
+      Then click on **Buckets** under **Object Storage & Archive Storage**.  This should take you to the **Buckets** page as shown in the screenshot below.
+
+      ![alt tag](./images/section-3-2-2.PNG)
+ 
+      Click on **Create Bucket** button to create a new *Bucket* for storing training data files. You can either use the default name or specify a name for the bucket. Leave the other fields as is and then click on **Create**. The new bucket should get created and be listed in the *Buckets* page as shown in the screenshot below.
+
+      ![alt tag](./images/section-3-2-3.PNG)
+
+      Next in the **Buckets** page, click on the bucket (link) which you created in the previous step. Under *Objects*, click on the **Upload** button.  In the *Upload Objects* panel, specify a name for the file you want to upload (optional) to OCI Object Storage, select the training file from your local directory and click **Upload**. Once the file gets uploaded, click on the **Close** button to close the file upload panel. The uploaded file should be listed in the *Objects* page as shown in the screenshot below.
+
+      ![alt tag](./images/section-3-2-4.PNG)
+
+   3. Train an Anomaly Detection Model
+   
+      Click on the hamburger icon on the top left and then click on **Analytics and AI** in the menu.  See screenshot below.
+
+      ![alt tag](./images/section-3-3-1.PNG)
+
+      Click on **Anomaly Detection** under **AI Services**.  This should take you to the Anomaly Detection Service *Projects* page as shown in the screenshot below.
+
+      ![alt tag](./images/section-3-3-2.PNG)
+
+      Then click on the **Create Project** button to create a new *Project*. A *Project* serves as a container for storing anomaly detection resources such as *Data Assets* and *Models*. Give your project a name and a description and then click on **Create**.  The project will get created and be listed in the **Projects** page as shown in the screenshot below.
+
+      ![alt tag](./images/section-3-3-3.PNG)
+
+      Next, click on the project (link) you just created.  In the project details page, click on **Create and Train Model** button.  This should start a *Create and Train Model* wizard.
+
+      A **Data Asset** is used to point to the location of a model training file.  The model training file can be sourced from an OCI Object Store Bucket, an OCI Autonomous Database (ATP / ADW) or an InfluxDB collection.  In this tutorial, we will be using a file stored in OCI Object Store Bucket to train the Univariate model.
+
+      On the **Select Data** step in the wizard, select the **Create a new data asset** radio button. This will bring up the **Create Data Asset** panel.  Give a name and description (both fields are optional) to the data asset and select **Oracle Object Storage** in the **Type** field. Select the bucket followed by training file which you created in Step [2]. See screenshot below.
+
+      ![alt tag](./images/section-3-3-4.PNG)
+
+      Click **Create** button to create the data asset. This should bring you back to the wizard.  Click **Next** and on the **Train Model** page, optionally provide a name and description for the model. Leave the default values for other fields as is. See screenshot below.
+
+      ![alt tag](./images/section-3-3-5.PNG)
+
+      Click **Next** and on the **Review** page of the wizard, verify the information. See screenshot below.
+
+      ![alt tag](./images/section-3-3-6.PNG)
+
+      Lastly, click **Create** to start model training. Model training will take a few minutes to complete.  Be patient and grab a coffee or a cookie.
+
+      You can view the status of the model in the **Models** page as shown in the screenshot below.
+
+      ![alt tag](./images/section-3-3-7.PNG)
+
+      Proceed to the next Step [4] as soon as the model status changes to **Active**.
 
 ## 4. Run inference and detect Anomalies
 
