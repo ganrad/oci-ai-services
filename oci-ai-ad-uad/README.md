@@ -75,7 +75,7 @@ To work on this tutorial, you must have the following
 
       After logging into OCI, you should be see the home web page as shown in the screenshot below.
 
-      ![alt tag](./images/section-3-1.PNG)
+      ![alt tag](./images/section-3-1.png)
 
    2. Store the training data set in OCI Object Store Bucket
 
@@ -83,33 +83,33 @@ To work on this tutorial, you must have the following
 
       Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
 
-      ![alt tag](./images/section-3-2-1.PNG)
+      ![alt tag](./images/section-3-2-1.png)
 
       Then click on **Buckets** under **Object Storage & Archive Storage**.  This should take you to the **Buckets** page as shown in the screenshot below.
 
-      ![alt tag](./images/section-3-2-2.PNG)
+      ![alt tag](./images/section-3-2-2.png)
  
       Click on **Create Bucket** button to create a new *Bucket* for storing training data files. You can either use the default name or specify a name for the bucket. Leave the other fields as is and then click on **Create**. The new bucket should get created and be listed in the *Buckets* page as shown in the screenshot below.
 
-      ![alt tag](./images/section-3-2-3.PNG)
+      ![alt tag](./images/section-3-2-3.png)
 
       Next in the **Buckets** page, click on the bucket (link) which you created in the previous step. Under *Objects*, click on the **Upload** button.  In the *Upload Objects* panel, specify a name for the file you want to upload (optional) to OCI Object Storage, select the training file from your local directory and click **Upload**. Once the file gets uploaded, click on the **Close** button to close the file upload panel. The uploaded file should be listed in the *Objects* page as shown in the screenshot below.
 
-      ![alt tag](./images/section-3-2-4.PNG)
+      ![alt tag](./images/section-3-2-4.png)
 
    3. Train an Anomaly Detection Model
    
       Click on the hamburger icon on the top left and then click on **Analytics and AI** in the menu.  See screenshot below.
 
-      ![alt tag](./images/section-3-3-1.PNG)
+      ![alt tag](./images/section-3-3-1.png)
 
       Click on **Anomaly Detection** under **AI Services**.  This should take you to the Anomaly Detection Service *Projects* page as shown in the screenshot below.
 
-      ![alt tag](./images/section-3-3-2.PNG)
+      ![alt tag](./images/section-3-3-2.png)
 
       Then click on the **Create Project** button to create a new *Project*. A *Project* serves as a container for storing anomaly detection resources such as *Data Assets* and *Models*. Give your project a name and a description and then click on **Create**.  The project will get created and be listed in the **Projects** page as shown in the screenshot below.
 
-      ![alt tag](./images/section-3-3-3.PNG)
+      ![alt tag](./images/section-3-3-3.png)
 
       Next, click on the project (link) you just created.  In the project details page, click on **Create and Train Model** button.  This should start a *Create and Train Model* wizard.
 
@@ -117,21 +117,21 @@ To work on this tutorial, you must have the following
 
       On the **Select Data** step in the wizard, select the **Create a new data asset** radio button. This will bring up the **Create Data Asset** panel.  Give a name and description (both fields are optional) to the data asset and select **Oracle Object Storage** in the **Type** field. Select the bucket followed by training file which you created in Step [2]. See screenshot below.
 
-      ![alt tag](./images/section-3-3-4.PNG)
+      ![alt tag](./images/section-3-3-4.png)
 
       Click **Create** button to create the data asset. This should bring you back to the wizard.  Click **Next** and on the **Train Model** page, optionally provide a name and description for the model. Leave the default values for other fields as is. See screenshot below.
 
-      ![alt tag](./images/section-3-3-5.PNG)
+      ![alt tag](./images/section-3-3-5.png)
 
       Click **Next** and on the **Review** page of the wizard, verify the information. See screenshot below.
 
-      ![alt tag](./images/section-3-3-6.PNG)
+      ![alt tag](./images/section-3-3-6.png)
 
       Lastly, click **Create** to start model training. Model training will take a few minutes to complete.  Be patient and grab a coffee or a cookie.
 
       You can view the status of the model in the **Models** page as shown in the screenshot below.
 
-      ![alt tag](./images/section-3-3-7.PNG)
+      ![alt tag](./images/section-3-3-7.png)
 
       Proceed to the next Step [4] as soon as the model status changes to **Active**.
 
