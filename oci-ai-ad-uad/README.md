@@ -14,7 +14,7 @@ With OCI Anomaly Detection Service, users can
 - Train univariate anomaly detection models using different types of univariate time series data (See Section 1 below)
 - Detect different types of anomalies in time series data such as point, range and contextual anomalies
 - Train models for up to 300 univariate signals using one data set stored in an OCI Object Store file or OCI Autonomous Database table
-- Infer upon or detect anomalies in 300 individual time series data (~ signals) using a single **detect anomalies** api call
+- Infer upon or detect anomalies in 300 individual time series data (~ signals) using a single **detect anomalies** API call
 
 In this tutorial, we will go thru the following steps.
 
@@ -22,7 +22,6 @@ In this tutorial, we will go thru the following steps.
 2. Review Time Series data sets
 3. Train an Anomaly Detection Model
 4. Run inference and detect anomalies
-5. Confirm OCI Anomaly Detection Service Results
 
 ## Before You Begin
 To work on this tutorial, you must have the following
@@ -37,7 +36,7 @@ To work on this tutorial, you must have the following
 ## 1. Review Univariate Time Series data patterns and Anomaly types
    OCI Anomaly Detection Service can detect anomalies in different types/patterns of univariate time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
 
-   The section below describes the time series data patterns and anomaly types detected by OCI Anomaly Detection Service.
+   The Section below describes the time series data patterns and anomaly types detected by OCI Anomaly Detection Service.
 
    - A data set containing seasonal patterns.
      OCI Anomaly Detection Service detects spikes and dips in time series data containing seasonal patterns. The univariate kernel does automatic window size detection and as a result anomalous spikes are detected as soon as they occur (no delay) with high precision as shown in the train and test graphs below.
@@ -56,7 +55,7 @@ To work on this tutorial, you must have the following
      OCI Anomaly Detection Service detects anomalous values (spikes and dips) in linear time series data.
 
 ## 2. Review Time Series data sets
-   In this section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
+   In this Section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
 
    Use Case | Description | Data Pattern | Anomaly Type | Data Sets
    -------- | ----------- | ------------ | ------------ | ---------
@@ -66,10 +65,11 @@ To work on this tutorial, you must have the following
    Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
    Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
 
-   Before proceeding with the next step, click on the data sets which you want to use for training Univariate AD models and save them to your local hard drive (on your PC). 
+   Before proceeding with the next step, click on the data sets which you want to use for training Univariate AD models and save them to your local hard drive (on your PC). Also, download and save the corresponding Test/Inference data sets as well.
 
 ## 3. Train an Anomaly Detection Model
-   In this section, we will train an anomaly detection model using OCI Console.
+
+   In this Section, we will train an anomaly detection model using OCI Console.
    
    1. Login to [OCI Console](cloud.oracle.com) using your credentials.
 
@@ -77,9 +77,15 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-1.png)
 
-   2. Store the training data set in OCI Object Store Bucket
+   2. Select and store a training data set in OCI Object Store Bucket
 
-      In this tutorial, we will use OCI Object Store Bucket to store training data set files. We will then use these files to train anomaly detection models.
+      In this step, we will store training data set for use case #4 (Monitor Blood Glucose Levels) in OCI Object Store Bucket and then use it to train an Anomaly Detection *Model*. This data set contains normal blood glucose readings collected over a period of 3 to 4 months.
+
+      The trained model will then be used to infer high or low glucose values (anomalies) in a test data set in Section [4].
+
+      This example along with the sample data set showcases how OCI Anomaly Detection Service automatically infers upper and lower bounds for a given data set that contains no seasonal or cyclic patterns and trains a model to detect values (point anomalies) that fall outside the nominal range.
+
+      Feel free to choose any data set from Section [2] to train your model, understand the data pattern, run inference and verify test results.  By following the steps in this tutorial, you can also use your own data set to train a model and detect anomalies.
 
       Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
 
@@ -141,6 +147,28 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-3-8.png)
 
-## 4. Run inference and detect Anomalies
+## 4. Run Inference and Detect Anomalies
 
-## 5. Confirm OCI Anomaly Detection Service Results
+   In this Section, we will 
+   - Use the trained model to detect anomalies in a test data set (provided in Section [2])
+   - Verify OCI Anomaly Detection results with a labeled data set (provided in Section [2])
+
+   All test data sets contain anomalous values.
+
+   We will use the test data set for use case #4 for performing inference and detecting anomalies.
+
+   1. Run Inference 
+
+      Click on the model which you created in Section [3].  See screenshot below.
+
+      ![alt tag](./images/section-4-1-1.png)
+
+      Click on **Detect Anomalies** in the **Anomalies** page.  In the **Detect Anomalies** window, click on **Select File** and pick the Test/Inference data file which you downloaded in Section [2].  In case you used the training data set for use case #4 to train the model then select the corresponding Test/Inference data set file.
+
+      Leave the **Sensitivity** field value empty for the initial run. When no value is specified, the default sensitivity value of 0.5 will be used.  In the next step, we will change this value and see how it affects the anomalies detected.
+
+      Click on **Detect** button.  Anomaly detection results will be rendered as graphs as shown in the screenshot below.
+
+      ![alt tag](./images/section-4-1-2.png)
+
+      Review the graphs.
