@@ -153,22 +153,24 @@ To work on this tutorial, you must have the following
    - Use the trained model to detect anomalies in a test data set (provided in Section [2])
    - Verify OCI Anomaly Detection results with a labeled data set (provided in Section [2])
 
-   All test data sets contain anomalous values.
+   All Test/Inference data sets provided in Section [2] contain anomalous values.
 
    We will use the test data set for use case #4 for performing inference and detecting anomalies.
 
    1. Run Inference 
 
-      Click on the model which you created in Section [3].  See screenshot below.
+      First, click on the model which you created in Section [3] listed in a table under **Anomaly Detection Models**.  See screenshot below.
 
       ![alt tag](./images/section-4-1-1.png)
 
-      Click on **Detect Anomalies** in the **Anomalies** page.  In the **Detect Anomalies** window, click on **Select File** and pick the Test/Inference data file which you downloaded in Section [2].  In case you used the training data set for use case #4 to train the model then select the corresponding Test/Inference data set file.
+      Click on **Detect Anomalies** in the **Anomalies** page.  In the **Detect Anomalies** window, click on **Select File** and pick the Test/Inference data file which you downloaded in Section [2].  In case you used the training data set for use case #4 to train the model, select the corresponding Test/Inference data set file.
 
-      Leave the **Sensitivity** field value empty for the initial run. When no value is specified, the default sensitivity value of 0.5 will be used.  In the next step, we will change this value and see how it affects the anomalies detected.
+      Leave the **Sensitivity** field value empty for the initial run. When no value is specified, the default sensitivity value of 0.5 will be used.  In the next step, we will change this value and see how it affects the anomalies detected. See screenshot below.
+
+      ![alt tag](./images/section-4-1-2.png)
 
       Click on **Detect** button.  Anomaly detection results will be rendered as graphs as shown in the screenshot below.
 
-      ![alt tag](./images/section-4-1-2.png)
+      ![alt tag](./images/section-4-1-3.png)
 
       Review the graphs.
