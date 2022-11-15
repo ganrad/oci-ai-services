@@ -41,18 +41,21 @@ To work on this tutorial, you must have the following
    - A data set containing seasonal patterns.
      OCI Anomaly Detection Service detects spikes and dips in time series data containing seasonal patterns. The univariate kernel does automatic window size detection and as a result anomalous spikes are detected as soon as they occur (no delay) with high precision as shown in the train and test graphs below.
 
-     ![alt tag](./images/A-01.PNG)
-
-     ![alt tag](./images/A-01.PNG)
+     ![alt tag](./images/Network_service_usage_data_and_anomaly_detection_results.png)
 
    - A flat trend (or constant) data set.
      OCI Anomaly Detection Service detects anomalies in flat (or constant) trend data as shown in the train and test graphs below. 
+     ![alt tag](./images/Flat_sensors_and_anomaly_detection_results.png)
 
    - A continuously increasing linear trend data set. No anomalies detected (No false alarms!)
      OCI Anomaly Detection Service detects increasing linear trends in data values and doesn't flag any anomalies. 
+    
+     ![alt tag](./images/Database_VM_usage_data_and_anomaly_detection_results.png)
 
    - A linear trend data set. Detect anamalous spikes and dips.
      OCI Anomaly Detection Service detects anomalous values (spikes and dips) in linear time series data.
+
+     ![alt tag](./images/Dashboard_metric_data_and_anomaly_detection_results.png)
 
 ## 2. Review Time Series data sets
    In this Section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
@@ -61,8 +64,8 @@ To work on this tutorial, you must have the following
    -------- | ----------- | ------------ | ------------ | ---------
    Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
    Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
-   Horizon | | | |
-   Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
+   Dashboard metric monitor | Service identifies spike and dip anomalies in the process of user loading data into the dashboard. | Increasing or Decreasing Linear trend | Spikes and Dips | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)|
+   Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/dashboard_metric_train.csv) [Test/Inference Data Set](./data/dashboard_metric_test.csv)
    Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
 
    Before proceeding with the next step, click on the data sets which you want to use for training Univariate AD models and save them to your local hard drive (on your PC). Also, download and save the corresponding Test/Inference data sets as well.
