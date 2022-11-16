@@ -69,6 +69,10 @@ To work on this tutorial, you must have the following
    | ID | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
    -- | -------- | ----------- | ------------ | ------------ | ---------------- | ---------
    |  1 | Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
+   |  2 | Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it fluctuates over time based on system load | Increasing Linear trend | Spikes | | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
+   |  3 | Monitor Dashboard metrics | Service identifies spike and dip anomalies in the process of user loading data into the dashboard. | Increasing or Decreasing Linear trend | Spikes and Dips | | [Train Data Set](./data/dashboard_metric_train.csv) [Test/Inference Data Set](./data/dashboard_metric_test.csv)
+   |  4 | Monitor Blood Glucose Levels | Service identifies abnormal glucose levels | No trend | Point | High glucose level values > 120 mg/dL and lows < 80 mg/dL | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
+   |  5 | Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | | [Train Data Set](./data/simple_flat_syn_train.csv) [Test/Inference Data Set](./data/simple_flat_syn_test.csv)
 
    Before proceeding with the next step, click on the data sets which you want to use/explore for training Univariate AD models and save them to your local hard drive (on your PC). Also, download and save the corresponding Test/Inference data sets as well.
 
