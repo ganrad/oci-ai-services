@@ -66,9 +66,9 @@ To work on this tutorial, you must have the following
 ## 2. Review Time Series Data Sets
    In this Section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
 
-   ID | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
+   | ID | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
    -- | -------- | ----------- | ------------ | ------------ | ---------------- | ---------
-    1 | Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
+  | 1 | Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
 
    Before proceeding with the next step, click on the data sets which you want to use/explore for training Univariate AD models and save them to your local hard drive (on your PC). Also, download and save the corresponding Test/Inference data sets as well.
 
