@@ -4,7 +4,9 @@ This tutorial details the steps for detecting anomalies in **Univariate** signal
 
 Univariate anomaly detection (UAD) refers to the problem of identifying anomalies in a single time series data.  A single time series data contains timestamped values for one signal (a.k.a metric or measure).
 
-At a high level, the process of detecting anomalies in time series data using OCI Anomaly Detection Service involves two simple steps
+OCI Anomaly Detection Service offers two workflows for detecting anomalies in Univariate time series signals.  This tutorial will focus on detailing the steps for using the *Train Model and Detect* (TMD) workflow.
+
+At a high level, the process for detecting anomalies in time series data using TMD workflow involves two simple steps outlined below.
 - Training a model with a **Training** data set.
   The training data set should ideally not contain any anomalies. It should contain values that were collected when the monitoried system/asset was operating under normal conditions.  It's ok to include data values that represent normal seasonal trends & other values that represent normal conditions. 
 - Using the trained model to detect anomalies with an **Inference** data set.
@@ -12,16 +14,16 @@ At a high level, the process of detecting anomalies in time series data using OC
 
 With OCI Anomaly Detection Service, users can
 - Train univariate anomaly detection models using different types of univariate time series data (See Section 1 below)
-- Detect different types of anomalies in time series data such as point, range and contextual anomalies
+- Detect different types of anomalies in time series data such as point, range and contextual anomalies (Refer to Section 1 below)
 - Train models for up to 300 univariate signals using one data set stored in an OCI Object Store file or OCI Autonomous Database table
 - Infer upon or detect anomalies in 300 individual time series data (~ signals) using a single **detect anomalies** API call
 
 In this tutorial, we will go thru the following steps.
 
-1. Review Univariate Time Series data patterns and Anomaly types
-2. Review Time Series data sets
+1. Review Univariate Time Series Data patterns and Anomaly types
+2. Review Time Series Data Sets
 3. Train an Anomaly Detection Model
-4. Run inference and detect anomalies
+4. Detect Anomalies and Verify Results
 
 ## Before You Begin
 To work on this tutorial, you must have the following
@@ -33,45 +35,48 @@ To work on this tutorial, you must have the following
 - By default, only users in the **Administrators** group have access to all Anomaly Detection resources. If you are not an admin user, you will need to request your administrator to create OCI policies and assign them to your group.  Please refer to the instructions in the [About Anomaly Detection Policies](https://docs.oracle.com/en-us/iaas/Content/anomaly/using/policies.htm) page.
 - You must have a compartment which you will be using to provision required resources while going through the labs in this tutorial. Refer to OCI documentation to learn about [Managing Compartments](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm).
 
-## 1. Review Univariate Time Series data patterns and Anomaly types
-   OCI Anomaly Detection Service can detect anomalies in different types/patterns of univariate time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
+## 1. Review Univariate Time Series Data patterns and Anomaly types
+   OCI Anomaly Detection Service can detect anomalies in different types/patterns of Univariate time series data.  Furthermore, the service can identify different types of anomalies in the data with minimal false alarms.
 
    The Section below describes the time series data patterns and anomaly types detected by OCI Anomaly Detection Service.
 
    - A data set containing seasonal patterns.
+
      OCI Anomaly Detection Service detects spikes and dips in time series data containing seasonal patterns. The univariate kernel does automatic window size detection and as a result anomalous spikes are detected as soon as they occur (no delay) with high precision as shown in the train and test graphs below.
 
      ![alt tag](./images/Network_service_usage_data_and_anomaly_detection_results.png)
 
    - A flat trend (or constant) data set.
+
      OCI Anomaly Detection Service detects anomalies in flat (or constant) trend data as shown in the train and test graphs below. 
      ![alt tag](./images/Flat_sensors_and_anomaly_detection_results.png)
 
-   - A continuously increasing linear trend data set. No anomalies detected (No false alarms!)
-     OCI Anomaly Detection Service detects increasing linear trends in data values and doesn't flag any anomalies. 
+   - A continuously increasing linear trend data set.
+
+     OCI Anomaly Detection Service identifies increasing linear trends in data values and as such doesn't flag anomalies (No false alarms!) as shown in the graphs below. 
     
      ![alt tag](./images/Database_VM_usage_data_and_anomaly_detection_results.png)
 
-   - A linear trend data set. Detect anamalous spikes and dips.
-     OCI Anomaly Detection Service detects anomalous values (spikes and dips) in linear time series data.
+   - A linear trend data set.
+
+     OCI Anomaly Detection Service detects spikes and dips (anomalous values) in linear time series data. See graphs below.
 
      ![alt tag](./images/Dashboard_metric_data_and_anomaly_detection_results.png)
 
-## 2. Review Time Series data sets
+## 2. Review Time Series Data Sets
    In this Section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
 
-   Use Case | Description | Data Pattern | Anomaly Type | Data Sets
-   -------- | ----------- | ------------ | ------------ | ---------
-   Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
-   Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it is fluctuates over time based on system load | Increasing Linear trend | Spikes | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
-   Dashboard metric monitor | Service identifies spike and dip anomalies in the process of user loading data into the dashboard. | Increasing or Decreasing Linear trend | Spikes and Dips | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)|
-   Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | [Train Data Set](./data/dashboard_metric_train.csv) [Test/Inference Data Set](./data/dashboard_metric_test.csv)
-   Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | [Train Data Set](./data/simple_flat_train.csv) [Test/Inference Data Set](./data/simple_flat_test.csv)
+      | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
+   -- | -------- | ----------- | ------------ | ------------ | ---------
+    1 | Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
+    2 | Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it fluctuates over time based on system load | Increasing Linear trend | Spikes | | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
+    3 | Dashboard metric monitor | Service identifies spike and dip anomalies in the process of user loading data into the dashboard. | Increasing or Decreasing Linear trend | Spikes and Dips | | [Train Data Set](./data/dashboard_metric_train.csv) [Test/Inference Data Set](./data/dashboard_metric_test.csv)|
+    4 | Monitor Blood Glucose Levels | Service identifies abnormal glucose levels ~ highs (> 120 mg/dL) and lows (< 80 mg/dL) | No trend | Point | Glucose levels. High values > 120 mg/dL and lows < 80 mg/dL | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
+    5 | Flat trend | Service identifies anomalous values among constant values | Flat trend | Spikes | | [Train Data Set](./data/simple_flat_syn_train.csv) [Test/Inference Data Set](./data/simple_flat_syn_test.csv)
 
-   Before proceeding with the next step, click on the data sets which you want to use for training Univariate AD models and save them to your local hard drive (on your PC). Also, download and save the corresponding Test/Inference data sets as well.
+   Before proceeding with the next step, click on the data sets which you want to use/explore for training Univariate AD models and save them to your local hard drive (on your PC). Also, download and save the corresponding Test/Inference data sets as well.
 
 ## 3. Train an Anomaly Detection Model
-
    In this Section, we will train an anomaly detection model using OCI Console.
    
    1. Login to [OCI Console](cloud.oracle.com) using your credentials.
@@ -88,7 +93,7 @@ To work on this tutorial, you must have the following
 
       This example along with the sample data set showcases how OCI Anomaly Detection Service automatically infers upper and lower bounds for a given data set that contains no seasonal or cyclic patterns and trains a model to detect values (point anomalies) that fall outside the nominal range.
 
-      Feel free to choose any data set from Section [2] to train your model, understand the data pattern, run inference and verify test results.  By following the steps in this tutorial, you can also use your own data set to train a model and detect anomalies.
+      Readers can review and select any data set from Section [2] to train an AD model, understand the data pattern, run inference and verify test results. Readers can also use their own training and inference data sets.
 
       Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
 
@@ -116,9 +121,9 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-3-2.png)
 
-      A *Project* resource in OCI Anomaly Detection Service serves as a container for storing resources such as *Data Assets* and *Models*.
+      A *Project* resource in OCI Anomaly Detection Service serves as a container for storing resources such as *Data Assets*, *Models* and *Async Jobs*.
 
-      Click on the **Create Project** button to create a new *Project*. Give your project a name and a description and then click on **Create**.  The project will get created and be listed in the **Projects** page as shown in the screenshot below.
+      Click on the **Create Project** button to create a new *Project*. Give the new project a name and a description and then click on **Create**.  The project will get created and be listed in the **Projects** page as shown in the screenshot below.
 
       ![alt tag](./images/section-3-3-3.png)
 
@@ -136,11 +141,11 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-3-5.png)
 
-      Click **Next** and on the **Review** page of the wizard, verify the information. See screenshot below.
+      Click **Next**. On the next page, review all the information. See screenshot below.
 
       ![alt tag](./images/section-3-3-6.png)
 
-      Lastly, click **Create** to start model training. Model training will take a few minutes to complete.  Be patient and grab a coffee or a cookie.
+      Lastly, click **Create** to start model training. This step will take a few minutes to complete.  Be patient and grab a coffee or a cookie.
 
       You can view the status of the model in the **Models** page as shown in the screenshot below.
 
@@ -150,7 +155,7 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-3-8.png)
 
-## 4. Run Inference and Detect Anomalies
+## 4. Detect Anomalies and Verify Results
 
    In this Section, we will 
    - Use the trained model to detect anomalies in a test data set (provided in Section [2])
