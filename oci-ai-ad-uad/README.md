@@ -66,8 +66,8 @@ To work on this tutorial, you must have the following
 ## 2. Review Time Series Data Sets
    In this Section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
 
-      | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
-   -- | -------- | ----------- | ------------ | ------------ | ---------
+   ID | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
+   -- | -------- | ----------- | ------------ | ------------ | --------- | --------- |
     1 | Monitor Network Service Usage | Service identifies anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
     2 | Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in compute metrics usage (Memory consumption) as it fluctuates over time based on system load | Increasing Linear trend | Spikes | | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
     3 | Dashboard metric monitor | Service identifies spike and dip anomalies in the process of user loading data into the dashboard. | Increasing or Decreasing Linear trend | Spikes and Dips | | [Train Data Set](./data/dashboard_metric_train.csv) [Test/Inference Data Set](./data/dashboard_metric_test.csv)|
