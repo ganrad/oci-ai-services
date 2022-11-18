@@ -142,9 +142,9 @@ To work on this tutorial, you must have the following
 
       Anomalies are usually explainable only in the context of past events within a time series.  The *Window Size* parameter is used to set this contextual time window.  When **Automatic Window Size** option is selected, the service automatically computes the window size value.  However, in the case of use case #4, we are trying to detect *Point* anomalies and as such there is no need to look back at past events.
 
-      Uncheck the checkbox for **Automatic Window Size** and specify a value of 1 for **Window Size**.
+      Uncheck the checkbox for **Automatic Window Size** and specify a value of 1 for **Window Size**. Leave the default values for other fields as is.
 
-      Leave the default values for other fields as is. See screenshot below.
+      See screenshot below.
 
       ![alt tag](./images/section-3-3-5.png)
 
@@ -182,8 +182,21 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-4-1-2.png)
 
-      Click on **Detect** button.  Anomaly detection results will be rendered as graphs as shown in the screenshot below.
+      Click on **Detect** button.  Anomaly detection results will be rendered in graphs as shown in the screenshot below.
 
       ![alt tag](./images/section-4-1-3.png)
 
-      In reviewing the detect results graph, you might have noticed that the service has flagged a normal value as 
+      In the Anomaly Detection results graph, you might notice that the first data point flagged as an anomaly (115 mg/dL) is in fact a normal value.  While reviewing some of the other anomalous data points, you might realize that the service has flagged a few false positives.
+
+    2. Fine-tune Accuracy of Anomaly Detection
+
+      OCI Anomaly Detection Service allows users to reduce the number of flagged anomalies (improve accuracy) by adjusting the value of **Sensitivity** parameter.
+
+      Sensitivity paramter values can range between **0.0** and **1.0**.  When not specified, the default value of Sensitivity parameter is set at **0.5**. A higher Sensitivity value could potentially yield more number of anomalies and a lower value yields fewer anomalies.
+
+      Let's adjust the Sensitivity value and see if the service can deliver better accuracy with fewer false positives.  Click on **Detect Anomalies** button again and this time specify a value of **0.4** for **Sensitivity** parameter.  Review the results.
+
+      ![alt tag](./images/section-4-2-1.png)
+
+      In the detect results graph, you will observe that the service has produced fewer false positives.
+      
