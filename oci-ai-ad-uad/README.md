@@ -138,7 +138,13 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-3-4.png)
 
-      Click **Create** button to create the data asset. This should bring you back to the wizard.  Click **Next** and on the **Train Model** page, optionally provide a name and description for the model. Leave the default values for other fields as is. See screenshot below.
+      Click **Create** button to create the data asset. This should bring you back to the wizard.  Click **Next** and on the **Train Model** page, optionally provide a name and description for the model.
+
+      Anomalies are usually explainable only in the context of past events within a time series.  The *Window Size* parameter is used to set this contextual time window.  When **Automatic Window Size** option is selected, the service automatically computes the window size value.  However, in the case of use case #4, we are trying to detect *Point* anomalies and as such there is no need to look back at past events.
+
+      Uncheck the checkbox for **Automatic Window Size** and specify a value of 1 for **Window Size**.
+
+      Leave the default values for other fields as is. See screenshot below.
 
       ![alt tag](./images/section-3-3-5.png)
 
