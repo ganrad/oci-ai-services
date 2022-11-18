@@ -188,7 +188,7 @@ To work on this tutorial, you must have the following
 
       In the Anomaly Detection results graph, you might notice that the first data point flagged as an anomaly (115 mg/dL) is in fact a normal value.  While reviewing some of the other anomalous data points, you might realize that the service has flagged a few false positives.
 
-    2. Fine-tune Accuracy of Anomaly Detection
+   2. Fine-tune Accuracy of Anomaly Detection
 
       OCI Anomaly Detection Service allows users to reduce the number of flagged anomalies (improve accuracy) by adjusting the value of **Sensitivity** parameter.
 
