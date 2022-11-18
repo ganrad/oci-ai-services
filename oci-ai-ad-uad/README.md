@@ -49,7 +49,8 @@ To work on this tutorial, you must have the following
    - A flat trend (or constant) data set.
 
      OCI Anomaly Detection Service detects anomalies in flat (or constant) trend data as shown in the train and test graphs below. 
-     ![alt tag](./images/Flat_sensors_and_anomaly_detection_results.png)
+
+     ![alt tag](./images/Flat_sensor_and_anomaly_detection_results.png)
 
    - A continuously increasing linear trend data set.
 
@@ -68,11 +69,11 @@ To work on this tutorial, you must have the following
 
    | ID | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
    -- | -------- | ----------- | ------------ | ------------ | ---------------- | ---------
-   |  1 | Monitor Network Service Usage | Identify anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Test/Inference Data Set](./data/network_svc_usage_test.csv)
-   |  2 | Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in memory consumption (compute metric) as it fluctuates over time based on system load | Increasing Linear trend | Spikes | | [Train Data Set](./data/database_vm_train.csv) [Test/Inference Data Set](./data/database_vm_test.csv)
-   |  3 | Monitor Dashboard metrics | Identify spike and dip anomalies in the process of user loading data into a dashboard | Increasing or Decreasing Linear trend | Spikes and Dips | | [Train Data Set](./data/dashboard_metric_train.csv) [Test/Inference Data Set](./data/dashboard_metric_test.csv)
-   |  4 | Monitor Blood Glucose Levels | Identify abnormal blood glucose levels | No trend | Point | High glucose levels > 120 mg/dL and lows < 80 mg/dL | [Train Data Set](./data/ad-diabetes-train.csv) [Test/Inference Data Set](./data/ad-diabetes-test.csv)
-   |  5 | Flat trend | Identify anomalous values among constant values | Flat trend | Spikes | | [Train Data Set](./data/simple_flat_syn_train.csv) [Test/Inference Data Set](./data/simple_flat_syn_test.csv)
+   |  1 | Monitor Network Service Usage | Identify anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Inference Data Set](./data/network_svc_usage_test.csv)
+   |  2 | Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in memory consumption (compute metric) as it fluctuates over time based on system load | Increasing Linear trend | Spikes | | [Train Data Set](./data/database_vm_train.csv) [Inference Data Set](./data/database_vm_test.csv)
+   |  3 | Monitor Dashboard metrics | Identify spike and dip anomalies in the process of user loading data into a dashboard | Increasing or Decreasing Linear trend | Spikes and Dips | | [Train Data Set](./data/dashboard_metric_train.csv) [Inference Data Set](./data/dashboard_metric_test.csv)
+   |  4 | Monitor Blood Glucose Levels | Identify abnormal blood glucose levels | No trend | Point | High glucose levels > 120 mg/dL and lows < 80 mg/dL | [Train Data Set](./data/ad-diabetes-train.csv) [Inference Data Set](./data/ad-diabetes-test.csv)
+   |  5 | Flat trend | Identify anomalous values among constant values | Flat trend | Spikes | | [Train Data Set](./data/simple_flat_syn_train.csv) [Inference Data Set](./data/simple_flat_syn_test.csv)
 
    Before proceeding with the next step, click on the data sets which you want to use/explore for training Univariate AD models and save them to your local hard drive (on your PC). Also, download and save the corresponding Test/Inference data sets as well.
 
@@ -158,12 +159,10 @@ To work on this tutorial, you must have the following
 ## 4. Detect Anomalies and Verify Results
 
    In this Section, we will 
-   - Use the trained model to detect anomalies in a test data set (provided in Section [2])
-   - Verify OCI Anomaly Detection results with a labeled data set (provided in Section [2])
+   - Use the trained model to detect anomalies in an inference data set (provided in Section [2])
+   - Verify Anomaly Detection results
 
-   All Test/Inference data sets provided in Section [2] contain anomalous values.
-
-   We will use the test data set for use case #4 for performing inference and detecting anomalies.
+   The inference data sets provided in Section [2] contain anomalous values. We will use the inference data set for use case #4 for detecting anomalies.
 
    1. Run Inference 
 
@@ -171,9 +170,9 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-4-1-1.png)
 
-      Click on **Detect Anomalies** in the **Anomalies** page.  In the **Detect Anomalies** window, click on **Select File** and pick the Test/Inference data file which you downloaded in Section [2].  In case you used the training data set for use case #4 to train the model, select the corresponding Test/Inference data set file.
+      Click on **Detect Anomalies** in the **Anomalies** page.  In the **Detect Anomalies** window, click on **Select File** and pick the inference data file which you downloaded in Section [2] for use case #4.
 
-      Leave the **Sensitivity** field value empty for the initial run. When no value is specified, the default sensitivity value of 0.5 will be used.  In the next step, we will change this value and see how it affects the anomalies detected. See screenshot below.
+      Leave the **Sensitivity** field value empty for the initial run. When no value is specified, the default sensitivity value of 0.5 will be used.  In the next step, we will change this value and see how it affects the number of anomalies detected. See screenshot below.
 
       ![alt tag](./images/section-4-1-2.png)
 
@@ -181,4 +180,4 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-4-1-3.png)
 
-      Review the graphs.
+      In reviewing the detect results graph, you might have noticed that the service has flagged a normal value as 
