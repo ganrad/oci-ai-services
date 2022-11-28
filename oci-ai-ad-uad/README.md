@@ -200,4 +200,4 @@ To work on this tutorial, you must have the following
 
       Review the detected anomalous data point values in the Anomaly Detection results graph (shown above).  You will observe that the service has identified actual anomalous glucose levels only.
       
-      Next (left as an exercise to readers), download the other Univariate data sets from Section [2]. Train Anomaly Detection Models, run inferences with these data sets and review the results.  Better yet, use your own Univariate time-series data sets and evaluate OCI Anomaly Detection Service for your use cases!
+      Next (left as an exercise to readers), download the other Univariate data sets from Section [2]. Train Anomaly Detection Models, run anomaly detection with the provided inference data sets and review the results.  Better yet, use your time-series data sets and evaluate OCI Anomaly Detection Service for Univariate use cases!
