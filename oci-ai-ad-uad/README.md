@@ -186,17 +186,18 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-4-1-3.png)
 
-      In the Anomaly Detection results graph, you might notice that the first data point flagged as an anomaly (115 mg/dL) is in fact a normal value.  While reviewing some of the other anomalous data points, you might realize that the service has flagged a few false positives.
+      In the Anomaly Detection results graph (above), you might notice that the first data point flagged as an anomaly (115 mg/dL) is in fact a normal value.  While reviewing some of the other anomalous data points, you might realize that the service has flagged a few false positives.
 
-   2. Fine-tune Accuracy of Anomaly Detection
+   2. Fine-tune Accuracy of Anomaly Detection Service
 
-      OCI Anomaly Detection Service allows users to reduce the number of flagged anomalies (improve accuracy) by adjusting the value of **Sensitivity** parameter.
+      OCI Anomaly Detection Service allows users to easily adjust the number of flagged anomalies and improve accuracy using the **Sensitivity** parameter.
 
-      Sensitivity paramter values can range between **0.0** and **1.0**.  When not specified, the default value of Sensitivity parameter is set at **0.5**. A higher Sensitivity value could potentially yield more number of anomalies and a lower value yields fewer anomalies.
+      Sensitivity parameter values can range between **0.0** and **1.0**.  When not specified, the default value is set to **0.5**. A higher Sensitivity value could potentially yield more number of anomalies and a lower value yields fewer anomalies.
 
-      Let's adjust the Sensitivity value and see if the service can deliver better accuracy with fewer false positives.  Click on **Detect Anomalies** button again and this time specify a value of **0.4** for **Sensitivity** parameter.  Review the results.
+      Let's adjust the Sensitivity value to reduce (remove) false positives and improve accuracy of anomaly detection.  Click on **Detect Anomalies** button again and this time specify a value of **0.4** for **Sensitivity** parameter.
 
       ![alt tag](./images/section-4-2-1.png)
 
-      In the detect results graph, you will observe that the service has produced fewer false positives.
+      Review the detected anomalous data point values in the Anomaly Detection results graph (shown above).  You will observe that the service has identified actual anomalous glucose levels only.
       
+      Next (left as an exercise to readers), download the other Univariate data sets from Section [2]. Train Anomaly Detection Models, run inferences with these data sets and review the results.  Better yet, use your own Univariate time-series data sets and evaluate OCI Anomaly Detection Service for your use cases!
