@@ -36,32 +36,32 @@ To work on this tutorial, you must have the following
 **IMPORTANT**: Before proceeding, make sure you have trained an Anomaly Detection Model by following the steps in the Univariate Anomaly Detection tutorial.
 
 ## 1. Upload Inference Data Set to an OCI Object Store Bucket
-      
-      1. Login to [OCI Console](https://cloud.oracle.com) using your credentials
+
+   1. Login to [OCI Console](https://cloud.oracle.com) using your credentials
          
-         After logging into OCI, you should see the home web page as shown in the screenshot below.
+      After logging into OCI, you should see the home web page as shown in the screenshot below.
          
-         ![alt tag](./images/section-1-1.png)
+      ![alt tag](./images/section-1-1.png)
 
-      2. Store the inference data set in OCI Object Store Bucket
+   2. Store the inference data set in OCI Object Store Bucket
 
-         Download one of the sample inference data sets from the Univariate tutorial and save it locally on your workstation. For the purposes of this tutorial, we will be using the inference data set for use case no. 4 (Monitor Blood Glucose Levels).  This use case pertains to detecting abnormal blood glucose levels (anomalies) in a patient's blood data. In case you trained the anomaly detection model with a different data set, check to make sure you are using the corresponding inference data set.
+      Download one of the sample inference data sets from the Univariate tutorial and save it locally on your workstation. For the purposes of this tutorial, we will be using the inference data set for use case no. 4 (Monitor Blood Glucose Levels).  This use case pertains to detecting abnormal blood glucose levels (anomalies) in a patient's blood data. In case you trained the anomaly detection model with a different data set, check to make sure you are using the corresponding inference data set.
 
-         Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
+      Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
 
-         ![alt tag](./images/section-1-2-1.png)
+      ![alt tag](./images/section-1-2-1.png)
 
-         Then click on **Buckets** under **Object Storage & Archive Storage**.  This will take you to the **Buckets** page as shown in the screenshot below.
+      Then click on **Buckets** under **Object Storage & Archive Storage**.  This will take you to the **Buckets** page as shown in the screenshot below.
 
-         ![alt tag](./images/section-1-2-2.png)
+      ![alt tag](./images/section-1-2-2.png)
 
-         Click on **Create Bucket** button to create a new Bucket for storing training data files. You can either use the default name or specify a name for the bucket.  Leave the other fields as is and then click on **Create**.  The new bucket should get created and be listed in the *Buckets* page as shown in the screenshot below.
+      Click on **Create Bucket** button to create a new Bucket for storing training data files. You can either use the default name or specify a name for the bucket.  Leave the other fields as is and then click on **Create**.  The new bucket should get created and be listed in the *Buckets* page as shown in the screenshot below.
 
-         ![alt tag](./images/section-1-2-3.png)
+      ![alt tag](./images/section-1-2-3.png)
 
-         In the **Buckets** page, click on the bucket (link) which you created in the previous step. Under Objects, click on the **Upload** button. In the *Upload* Objects panel, specify a name for the file (optional) you want to upload to OCI Object Storage. Then select the inference file from your local directory and click **Upload**. Once the file gets uploaded, click on the **Close** button to close the file upload panel. The uploaded file should be listed in the *Objects* page as shown in the screenshot below.
+      In the **Buckets** page, click on the bucket (link) which you created in the previous step. Under Objects, click on the **Upload** button. In the *Upload* Objects panel, specify a name for the file (optional) you want to upload to OCI Object Storage. Then select the inference file from your local directory and click **Upload**. Once the file gets uploaded, click on the **Close** button to close the file upload panel. The uploaded file should be listed in the *Objects* page as shown in the screenshot below.
        
-         ![alt tag](./images/section-1-2-4.png)
+      ![alt tag](./images/section-1-2-4.png)
 
 ## 2. Create an Asynchronous Job
 
