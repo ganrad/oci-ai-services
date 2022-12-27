@@ -21,7 +21,7 @@ In this tutorial, we will use the OCI Console for creating an Asynchronous Infer
 
 1. Upload an inference data set to an OCI Object Store Bucket
 2. Create an Asynchronous Job
-3. Confirm Anomaly Detection results
+3. Review Anomaly Detection Results
 
 ## Before You Begin
 To work on this tutorial, you must have the following
