@@ -105,7 +105,7 @@ To work on this tutorial, you must have the following
 
 ## 3. Review Anomaly Detection Results
    
-   1. Access the Anomaly Detection Results JSON file
+   1. Access the anomaly detection results JSON file
 
       Follow the steps described in Section [1] above to access the **Output** OCI Object Store Bucket.
 
@@ -113,7 +113,7 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-1-1.png)
 
-   2. Review Detected Anomalies
+   2. Review and confirm detected anomalies
 
       Download the anomaly detection results JSON file to your local workstation. See screenshot below.
 
