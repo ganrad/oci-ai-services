@@ -45,7 +45,7 @@ To work on this tutorial, you must have the following
 
    2. Store the inference data set in OCI Object Store Bucket
 
-      Download one of the sample inference data sets from the Univariate tutorial and save it locally on your workstation. For the purposes of this tutorial, we will be using the inference data set for use case no. 4 (Monitor Blood Glucose Levels).  This use case pertains to detecting abnormal blood glucose levels (anomalies) in a patient's blood data. In case you trained the anomaly detection model with a different data set, check to make sure you are using the corresponding inference data set.
+      Download one of the sample inference data sets from the [Univariate tutorial](https://github.com/ganrad/oci-ai-services/tree/main/oci-ai-ad-uad) and save it locally on your workstation. For the purposes of this tutorial, we will be using the inference data set for **Use Case No. 4** (Monitor Blood Glucose Levels).  This use case pertains to detecting abnormal blood glucose levels (anomalies) in a patient's blood data. In case you trained the anomaly detection model with a different data set, check to make sure you are using the corresponding inference data set.
 
       Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
 
@@ -65,8 +65,36 @@ To work on this tutorial, you must have the following
 
 ## 2. Create an Asynchronous Job
 
+   1. Select the **Project** containing the trained model
+
+      Go to *Anomaly Detection Service* and select the **Project** containing the pre-trained Univariate model.  See screenshot below.
+
+      ![alt tag](./images/section-2-1-1.png)
+      
+      In the left resources panel under *Details*, click on **Jobs**.  See below.
+
+      ![alt tag](./images/section-2-1-2.png)
+
+   2. Create an **Async Job**
+
+      Click on **Create job** as shown in the screenshot below.
+
+      ![alt tag](./images/section-2-2-1.png)
+
+      In the **Create job** wizard, enter the following details.
+      - (Optional) **Name:** Name for the Async job
+      - (Optional) **Description:** Brief description of the job
+      - Model: Select the anomaly detection model which you created in the *Univariate* AD tutorial
+      - **Input request:** Select *Object store* from the drop-down control. Alternatively, you can also select *Inline* from the drop-down control.
+      - **Input bucket:** Select the OCI Object Store Bucket in which you have saved the inference data set. In case you selected *Inline* for **Input request**, then click on **Select File** to choose an inference data set (file) saved on your local workstation.  For the purpose of this tutorial, we will select the inference file saved in OCI Object Store.
+      - **Inference data:** Select the Inference data set (file) which you saved to OCI Object Store Bucket in Step 1 (above).
+      - **Output bucket:** Select the OCI Object Store Bucket where you want the service to save anomaly detection results.
+
+      See the screenshot below.  After verifying all information, click on **Create job**.  This will start the Async inference job.
+
+      ![alt tag](./images/section-2-2-2.png)
 
 ## 3. Confirm Anomaly Detection Results
    
 
-      Next, use your own time-series inference data sets to create Asynchronous Jobs and perform inference.
+Next, use your own time-series inference data sets to create Asynchronous Jobs and perform inference.
