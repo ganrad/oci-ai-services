@@ -95,7 +95,7 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-2-2-2.png)
 
-      The Async Job **Status** will initially display a value of *Accepted*, it will then switch to *In Progress* state once the Job starts running and finally when the Job finishes it's status will be *Succeeded*. As our inference data set is relatively small, the Async Job should finish within a minute or so. See screenshot below.
+      The Async Job **Status** will initially display a value of *Accepted*. The Job status will switch to *In Progress* once the Job starts running and finally when the Job finishes it's status will change to *Succeeded*. As our inference data set is relatively small, the Async Job should finish within a minute or so. See screenshot below.
 
       ![alt tag](./images/section-2-2-3.png)
 
@@ -103,13 +103,13 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-2-2-4.png)
 
-## 3. Confirm Anomaly Detection Results
+## 3. Review Anomaly Detection Results
    
    1. Download the Anomaly Detection Results JSON file.
 
       Follow the steps described in Section [1] above to access the Output OCI Object Store Bucket.
 
-      The inference results file would be created under a separate directory/folder in OCI Object Store using the following convention - **Model-OCID/Output-Bucket-Name**, where *Model-OCID* is the OCI ID of the Anomaly Detection *Model* and *Output-Bucket-Name* is the OCI Object Store Bucket *Name*.  The inference results file *Name* will be the same as the inference data set file name suffixed with **-results**. See screenshot below.
+      The anomaly detection results file would be created under a separate directory/folder in OCI Object Store Bucket using the following naming convention **Model-OCID/Output-Bucket-Name**, where *Model-OCID* is the OCI ID of the Anomaly Detection *Model* and *Output-Bucket-Name* is the OCI Object Store Bucket *Name*.  The anomaly detection results file *Name* will be the same as inference data set file name suffixed with **-results**. See screenshot below.
 
       ![alt tag](./images/section-3-1-1.png)
 
@@ -117,4 +117,4 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-3-1-2.png)
 
-Next, use your own time-series inference data sets to create Asynchronous Jobs and perform inference.
+You have now successfully completed this tutorial.  Next, use your own time-series inference data sets to create Asynchronous Jobs and perform inference.
