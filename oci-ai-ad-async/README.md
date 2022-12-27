@@ -105,16 +105,20 @@ To work on this tutorial, you must have the following
 
 ## 3. Review Anomaly Detection Results
    
-   1. Download the Anomaly Detection Results JSON file.
+   1. Access the Anomaly Detection Results JSON file
 
-      Follow the steps described in Section [1] above to access the Output OCI Object Store Bucket.
+      Follow the steps described in Section [1] above to access the **Output** OCI Object Store Bucket.
 
       The anomaly detection results file would be created under a separate directory/folder in OCI Object Store Bucket using the following naming convention **Model-OCID/Output-Bucket-Name**, where *Model-OCID* is the OCI ID of the Anomaly Detection *Model* and *Output-Bucket-Name* is the OCI Object Store Bucket *Name*.  The anomaly detection results file *Name* will be the same as inference data set file name suffixed with **-results**. See screenshot below.
 
       ![alt tag](./images/section-3-1-1.png)
 
-      To review the detected anomalies in the inference data set, download the anomaly detection results JSON file to your local workstation. See screenshot below.
+   2. Review Detected Anomalies
+
+      Download the anomaly detection results JSON file to your local workstation. See screenshot below.
 
       ![alt tag](./images/section-3-1-2.png)
+
+      Open the file and verify the detected anomalous events (metric values).
 
 You have now successfully completed this tutorial.  Next, use your own time-series inference data sets to create Asynchronous Jobs and perform inference.
