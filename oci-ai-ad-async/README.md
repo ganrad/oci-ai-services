@@ -82,10 +82,11 @@ To work on this tutorial, you must have the following
       ![alt tag](./images/section-2-2-1.png)
 
       In the **Create job** wizard, enter the following details.
+      - **Compartment:** OCI Compartment Name. Leave the default value as is.
       - (Optional) **Name:** Name for the Async job
       - (Optional) **Description:** Brief description of the job
-      - Model: Select the anomaly detection model which you created in the *Univariate* AD tutorial
-      - **Input request:** Select *Object store* from the drop-down control. Alternatively, you can also select *Inline* from the drop-down control.
+      - **Model:** Select the anomaly detection model which you created in the *Univariate* AD tutorial
+      - **Input request:** Select *Object store* from the drop-down control. Alternatively, you can also select *Inline* from the drop-down control. In this latter case, you can detect anomalies in an inference data set by selecting the corresponding data file from your local workstation.
       - **Input bucket:** Select the OCI Object Store Bucket in which you have saved the inference data set. In case you selected *Inline* for **Input request**, then click on **Select File** to choose an inference data set (file) saved on your local workstation.  For the purpose of this tutorial, we will select the inference file saved in OCI Object Store.
       - **Inference data:** Select the Inference data set (file) which you saved to OCI Object Store Bucket in Step 1 (above).
       - **Output bucket:** Select the OCI Object Store Bucket where you want the service to save anomaly detection results.
@@ -94,7 +95,26 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-2-2-2.png)
 
+      The Async Job **Status** will initially display a value of *Accepted*, it will then switch to *In Progress* state once the Job starts running and finally when the Job finishes it's status will be *Succeeded*. As our inference data set is relatively small, the Async Job should finish within a minute or so. See screenshot below.
+
+      ![alt tag](./images/section-2-2-3.png)
+
+      Click on the completed Async Job to view it's details as shown in the screenshot below.
+
+      ![alt tag](./images/section-2-2-4.png)
+
 ## 3. Confirm Anomaly Detection Results
    
+   1. Download the Anomaly Detection Results JSON file.
+
+      Follow the steps described in Section [1] above to access the Output OCI Object Store Bucket.
+
+      The inference results file would be created under a separate directory/folder in OCI Object Store using the following convention - **Model-OCID/Output-Bucket-Name**, where *Model-OCID* is the OCI ID of the Anomaly Detection *Model* and *Output-Bucket-Name* is the OCI Object Store Bucket *Name*.  The inference results file *Name* will be the same as the inference data set file name suffixed with **-results**. See screenshot below.
+
+      ![alt tag](./images/section-3-1-1.png)
+
+      To review the detected anomalies in the inference data set, download the anomaly detection results JSON file to your local workstation. See screenshot below.
+
+      ![alt tag](./images/section-3-1-2.png)
 
 Next, use your own time-series inference data sets to create Asynchronous Jobs and perform inference.
