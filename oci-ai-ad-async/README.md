@@ -19,7 +19,7 @@ At a high level, the process for detecting anomalies using Asynchronous inferenc
 
 In this tutorial, we will use the OCI Console for creating an Asynchronous Inference Job. The steps are outlined below.
 
-1. [Upload an inference data set to an OCI Object Store Bucket](#1-upload-an-inference-data-set-to-an-oci-object-store-bucket)
+1. [Upload Inference data set to an OCI Object Store Bucket](#1-upload-inference-data-set-to-an-oci-object-store-bucket)
 2. [Create an Asynchronous Job](#2-create-an-asynchronous-job)
 3. [Review Anomaly Detection Results](#3-review-anomaly-detection-results)
 

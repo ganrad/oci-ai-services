@@ -20,10 +20,10 @@ With OCI Anomaly Detection Service, users can
 
 In this tutorial, we will go thru the following steps.
 
-1. Review Univariate Time Series Data patterns and Anomaly types
-2. Review Time Series Data Sets
-3. Train an Anomaly Detection Model
-4. Detect Anomalies and Verify Results
+1. [Review Univariate Time Series Data patterns and Anomaly types](#1-review-univariate-time-series-data-patterns-and-anomaly-types)
+2. [Review Time Series Data Sets](#2-review-time-series-data-sets)
+3. [Train an Anomaly Detection Model](#3-train-an-anomaly-detection-model)
+4. [Detect Anomalies and Verify Results](#4-detect-anomalies-and-verify-results)
 
 ## Before You Begin
 To work on this tutorial, you must have the following
@@ -68,7 +68,7 @@ To work on this tutorial, you must have the following
    In this Section, we will review time series data patterns along with types of anomalies which can be detected by OCI Anomaly Detection Service.
 
    | ID | Use Case | Description | Data Pattern | Anomaly Type | Anomalous Values | Data Sets
-   -- | -------- | ----------- | ------------ | ------------ | ---------------- | ---------
+   | -- | -------- | ----------- | ------------ | ------------ | ---------------- | ---------
    |  1 | Monitor Network Service Usage | Identify anomalies in network service metrics - Bytes received/transmitted | Seasonal trend | Spikes | Values above 1.5 Kbps | [Train Data Set](./data/network_svc_usage_train.csv) [Inference Data Set](./data/network_svc_usage_test.csv)
    |  2 | Monitor Compute Service Usage | Service doesn't identify anomalies (occasional spikes) in memory consumption (compute metric) as it fluctuates over time based on system load | Increasing Linear trend | Spikes | | [Train Data Set](./data/database_vm_train.csv) [Inference Data Set](./data/database_vm_test.csv)
    |  3 | Monitor Dashboard metrics | Identify spike and dip anomalies in the process of user loading data into a dashboard | Increasing or Decreasing Linear trend | Spikes and Dips | | [Train Data Set](./data/dashboard_metric_train.csv) [Inference Data Set](./data/dashboard_metric_test.csv)
