@@ -17,7 +17,7 @@ At a high level, the process for detecting anomalies using Asynchronous inferenc
 - Detect anomalies with an **Inference** data set.
   Use the Asynchronous Inference API (AD Service SDK) or OCI Console to create an Asynchronous Job.
 
-In this tutorial, we will use the OCI Console for creating an Asynchronous Inference Job. The high level steps are as follows.
+In this tutorial, we will use the OCI Console for creating an Asynchronous Inference Job. The steps are outlined below.
 
 1. Upload an inference data set to an OCI Object Store Bucket
 2. Create an Asynchronous Job
@@ -81,15 +81,18 @@ To work on this tutorial, you must have the following
 
       ![alt tag](./images/section-2-2-1.png)
 
-      In the **Create job** wizard, enter the following details.
-      - **Compartment:** OCI Compartment Name. Leave the default value as is.
-      - (Optional) **Name:** Name for the Async job
-      - (Optional) **Description:** Brief description of the job
-      - **Model:** Select the anomaly detection model which you created in the *Univariate* AD tutorial
-      - **Input request:** Select *Object store* from the drop-down control. Alternatively, you can also select *Inline* from the drop-down control. In this latter case, you can detect anomalies in an inference data set by selecting the corresponding data file from your local workstation.
-      - **Input bucket:** Select the OCI Object Store Bucket in which you have saved the inference data set. In case you selected *Inline* for **Input request**, then click on **Select File** to choose an inference data set (file) saved on your local workstation.  For the purpose of this tutorial, we will select the inference file saved in OCI Object Store.
-      - **Inference data:** Select the Inference data set (file) which you saved to OCI Object Store Bucket in Step 1 (above).
-      - **Output bucket:** Select the OCI Object Store Bucket where you want the service to save anomaly detection results.
+      Refer to the table below to specify correct values for the fields in the **Create job** wizard.
+
+      | Field Name | Description | Optional (Yes/No)
+      | ---------- | ----------- | -----------------
+      | Compartment | OCI Compartment Name. Leave the default value as is. | No
+      | Name | Name of the Async job | Yes
+      | Description | Brief description of the job | Yes
+      | Model | Anomaly Detection Model Name. Select the anomaly detection model which you created in the *Univariate* AD tutorial | No
+      | Input request | Request type. Select *Object store* from the drop-down control. Alternatively, you can also select *Inline* from the drop-down control. In this latter case, you can detect anomalies in an inference data set by selecting the corresponding data file from your local workstation. | No
+      | Input bucket | Input OCI Object Storage Bucket Name. Select the OCI Object Store Bucket in which you have saved the inference data set. In case you selected *Inline* for **Input request**, click on **Select File** to choose an inference data set (file) saved on your local workstation.  For the purpose of this tutorial, we will select the inference data set (file) saved in a OCI Object Store bucket. | No
+      | Inference data | Inference data set file. Select the Inference data set (file) which you saved to OCI Object Store Bucket in Section [1] above. | No
+      | Output bucket | Output OCI Object Storage Bucket Name. Select the OCI Object Store Bucket where you want the service to save anomaly detection results. | No
 
       See the screenshot below.  After verifying all information, click on **Create job**.  This will start the Async inference job.
 
@@ -107,9 +110,9 @@ To work on this tutorial, you must have the following
    
    1. Access the anomaly detection results JSON file
 
-      Follow the steps described in Section [1] above to access the **Output** OCI Object Store Bucket.
+      Follow the steps described in Section [1] above to access the **Output** OCI Object Store *Bucket*.
 
-      The anomaly detection results file would be created under a separate directory/folder in OCI Object Store Bucket using the following naming convention **Model-OCID/Output-Bucket-Name**, where *Model-OCID* is the OCI ID of the Anomaly Detection *Model* and *Output-Bucket-Name* is the OCI Object Store Bucket *Name*.  The anomaly detection results file *Name* will be the same as inference data set file name suffixed with **-results**. See screenshot below.
+      The anomaly detection results file would be saved under a separate directory/folder in OCI Object Store Bucket using the following naming convention **Model-OCID/Output-Bucket-Name**, where *Model-OCID* is the OCI ID of the Anomaly Detection *Model* and *Output-Bucket-Name* is the OCI Object Store Bucket *Name*.  The anomaly detection results file *Name* will be the same as inference data set file name suffixed with **-results**. See screenshot below.
 
       ![alt tag](./images/section-3-1-1.png)
 
