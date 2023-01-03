@@ -45,7 +45,7 @@ To work on this tutorial, you must have the following
 
    2. Store the inference data set in OCI Object Store Bucket
 
-      Download one of the sample inference data sets from the [Univariate tutorial](https://github.com/ganrad/oci-ai-services/tree/main/oci-ai-ad-uad) and save it locally on your workstation. For the purposes of this tutorial, we will be using the inference data set for **Use Case No. 4** (Monitor Blood Glucose Levels).  This use case pertains to detecting abnormal blood glucose levels (anomalies) in a patient's blood data. In case you trained the anomaly detection model with a different data set, check to make sure you are using the corresponding inference data set.
+      Download one of the sample inference data sets from the [Univariate Tutorial](https://github.com/ganrad/oci-ai-services/tree/main/oci-ai-ad-uad#2-review-time-series-data-sets) and save it locally on your workstation. For the purposes of this tutorial, we will be using the inference data set for **Use Case No. 4** (Monitor Blood Glucose Levels).  This use case pertains to detecting abnormal blood glucose levels (anomalies) in a patient's blood data. In case you trained the anomaly detection model with a different data set, check to make sure you are using the corresponding inference data set.
 
       Click on the hamburger icon on the top left and then click on **Storage** in the display menu.  See screenshot below.
 
