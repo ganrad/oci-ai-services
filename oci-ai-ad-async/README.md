@@ -19,9 +19,9 @@ At a high level, the process for detecting anomalies using Asynchronous inferenc
 
 In this tutorial, we will use the OCI Console for creating an Asynchronous Inference Job. The steps are outlined below.
 
-1. Upload an inference data set to an OCI Object Store Bucket
-2. Create an Asynchronous Job
-3. Review Anomaly Detection Results
+1. [Upload an inference data set to an OCI Object Store Bucket](#1-upload-an-inference-data-set-to-an-oci-object-store-bucket)
+2. [Create an Asynchronous Job](#2-create-an-asynchronous-job)
+3. [Review Anomaly Detection Results](#3-review-anomaly-detection-results)
 
 ## Before You Begin
 To work on this tutorial, you must have the following
@@ -88,7 +88,7 @@ To work on this tutorial, you must have the following
       | Compartment | OCI Compartment Name. Leave the default value as is. | No
       | Name | Name of the Async job | Yes
       | Description | Brief description of the job | Yes
-      | Model | Anomaly Detection Model Name. Select the anomaly detection model which you created in the *Univariate* AD tutorial | No
+      | Model | Anomaly Detection Model Name. Select the anomaly detection model which you created in the *Univariate* AD Tutorial | No
       | Input request | Request type. Select *Object store* from the drop-down control. Alternatively, you can also select *Inline* from the drop-down control. In this latter case, you can detect anomalies in an inference data set by selecting the corresponding data file from your local workstation. | No
       | Input bucket | Input OCI Object Storage Bucket Name. Select the OCI Object Store Bucket in which you have saved the inference data set. In case you selected *Inline* for **Input request**, click on **Select File** to choose an inference data set (file) saved on your local workstation.  For the purpose of this tutorial, we will select the inference data set (file) saved in a OCI Object Store bucket. | No
       | Inference data | Inference data set file. Select the Inference data set (file) which you saved to OCI Object Store Bucket in Section [1] above. | No
