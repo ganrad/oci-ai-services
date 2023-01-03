@@ -4,12 +4,21 @@ This tutorial details the steps for detecting anomalies in inference data sets u
 
 The terms **Detecting Anomalies** and **Inferencing** are used interchangably in the remainder of this tutorial to mean one and the same thing - Detecting anomalies in time series data.
 
-Asynchronous Inference feature can be used with both Univariate and Multivariate inference data sets.
+*Asynchronous Inference* feature can be used to detect anomalies in both Univariate and Multivariate inference data sets.
 
-Typical use cases or scenarios where users can benefit from using Asynchronous Inference are listed below.
-- Large inference data sets
+Typical use cases and scenarios where Asynchronous Inference can be used are listed below.
+- **Processing of large inference data sets (Batch processing)**
+
   The maximum number of data points supported by the *detectAnomalies* synchronous API is 30K.  This may impose restrictions in anomaly detection scenarios where a large number of data points typically in the millions need to be inferenced.
-- 
+
+- **Process anomalous events**
+
+  In certain anomaly detection scenarios, the inferenced data (detected anomalies) may need to be transformed or enriched before it can be consumed by downstream applications. This may entail saving the detected anomalies to a file and then using other OCI PaaS Services such as OCI Data Flow to enrich (post process) the data. 
+
+- **Automating inference workflows**
+
+  In certain scenarios, time series data collected from various devices may need to be pre-processed or enriched using PaaS Services such as OCI Data Flow, prior to performing inferencing. Asynchronous Inference feature may be well suited for these scenarios. Customers can easily integrate anomaly detection within data processing pipelines or workflows using the provided API's/SDK's.
+  
 
 At a high level, the process for detecting anomalies using Asynchronous inferencing involves the steps outlined below.
 - Training a model with a **Training** data set.
