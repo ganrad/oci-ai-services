@@ -6,19 +6,19 @@ The terms **Detecting Anomalies** and **Inferencing** are used interchangably in
 
 *Asynchronous Inference* feature can be used to detect anomalies in both Univariate and Multivariate inference data sets.
 
-Typical use cases and/or scenarios where Asynchronous Inference feature can be used are listed below.
+Typical use cases and/or scenarios suited for Asynchronous Inferencing are described below.
 
-- **Processing large inference data sets (Batch processing)**
+- **Detect anomalies in very large data sets**
 
-  The maximum number of data points supported by the *detectAnomalies* synchronous API is 30K.  This may impose restrictions in anomaly detection scenarios where a large number of data points typically in the millions need to be inferenced.
+  The maximum number of data points supported by the *detectAnomalies* REST API (Synchronous API) is 30K.  This may impose restrictions in anomaly detection scenarios where a large number of data points typically in the millions need to be inferenced. Using Asynchronous inference, users can analyze and detect anomalies in very large data sets ~ 10 million data points.
 
-- **Automating inference workflows**
+- **Automate inference workflows**
 
-  In certain scenarios, time series data collected from various devices may need to be pre-processed or enriched using PaaS Services such as OCI Data Flow, prior to performing inferencing. Asynchronous Inference feature may be well suited for these scenarios. Customers can easily integrate anomaly detection within data processing pipelines or workflows using the provided API's/SDK's.
+  In IoT use cases, time series data is usually collected from large number of  sensors/devices and stored in a persistent data store such as a database or a file system.  Oftentimes, this raw data has to be pre-processed (enriched) using PaaS Services such as OCI Data Flow, prior to performing inferencing. Users can easily integrate asynchronous inference API's within data processing pipelines and automate inference workflows.
   
-- **Process anomalous events**
+- **Post-process anomalous events**
 
-  In certain anomaly detection scenarios, the inferenced data (detected anomalies) may need to be transformed or enriched before it can be consumed by downstream applications. This may require saving the detected anomalies to a file and then using other OCI PaaS Services such as OCI Data Flow to enrich (post process) the data. 
+  In certain anomaly detection scenarios, the inferenced data (detected anomalies) may need to be transformed or enriched before it can be consumed by downstream applications. With Asynchronous inference, detected anomalies are saved in an OCI Object Store location (Bucket).  Users can therefore use PaaS services such as OCI Data Flow to analyze, process and/or enrich the anomalous events. Furthermore, the anomalies can also be easily consumed and rendered on vizualization graphs in Oracle Analytics Cloud to allow users to monitor target systems and take corrective actions.
 
 At a high level, the process for detecting anomalies using Asynchronous inferencing involves the steps outlined below.
 - Training a model with a **Training** data set.
