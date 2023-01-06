@@ -133,4 +133,4 @@ To work on this tutorial, you must have the following
 
       Open the file and verify the detected anomalous events (metric values).
 
-You have now successfully completed this tutorial.  Next, use your own time-series inference data sets to create Asynchronous Jobs and perform inference.
+You have now successfully completed this tutorial.  Explore the Asynchronous Inference feature by using your own time-series inference data sets to create Asynchronous Jobs and perform inference.
