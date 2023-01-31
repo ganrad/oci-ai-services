@@ -24,7 +24,7 @@ WORKDIR /envs
 RUN curl -X GET $condaurl --output $condaenv.tar
 
 # Unpack the conda env
-RUN mkdir $condaenv && tar -xvf $condaenv.tar -C $condaenv
+RUN mkdir $condaenv && tar -xvf $condaenv.tar -C ./$condaenv
 
 # Activate the conda env
 RUN source activate /envs/$condaenv/bin/activate
