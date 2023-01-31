@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-# %%
 # MIT License
 
 # Copyright (c) 2021 HZ-MS-CSA
@@ -23,116 +22,167 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# %%
-
-# ### Model Scoring
-
-# %%
-
+# ### Model Scoring Server for models created using OCI Data Science
 
 import json
-import numpy as np
-import pandas as pd
 import os
-import pickle
-import joblib
-import os
-from sklearn.linear_model import LogisticRegression
-from azureml.core.workspace import Workspace
-from azureml.core.model import Model
+import importlib.util
+import shutil
+from zipfile import ZipFile
 
+import oci
+import yaml
 
-# %%
+# Configure OCI client
+config = oci.config.from_file(os.environ['OCI_CONFIG_FILE_LOCATION'])
+print("Loaded OCI client file")
 
+# Initialize data science service client with config file
+data_science_client = oci.data_science.DataScienceClient(config)
 
-# Use Service Principal
-from azureml.core.authentication import ServicePrincipalAuthentication
+"""
+  Loads the ML model artifacts from OCI Data Science.  Call this function to
+  pre-load the model into the cache.
 
-sp = ServicePrincipalAuthentication(tenant_id=os.environ['TENANT_ID'], # tenantID
-                                    service_principal_id=os.environ['CLIENT_ID'], # clientId
-                                    service_principal_password=os.environ['CLIENT_SECRET']) # clientSecret
+  Parameters:
+  model_id: OCI Data Science Model OCID
+"""
+def load_model(model_id):
+    # Send the request to service, some parameters are not required, see API
+    # doc for more info
+    get_model_artifact_content_response = data_science_client.get_model_artifact_content(
+    model_id=model_id,
+    opc_request_id="mserver-001",
+    allow_control_chars=True)
 
-ws = Workspace.get(name=os.environ['WORKSPACE_NAME'],
-                   auth=sp,
-                   subscription_id=os.environ['SUBSCRIPTION_ID'],
-                  resource_group=os.environ['RESOURCE_GROUP'])
+    # Get the data from response
+    print(f"Resource URL: {get_model_artifact_content_response.request.url}")
+    print(f"Status: {get_model_artifact_content_response.status}")
 
+    print(f"Current working directory: {os.getcwd()}")
+    artifact_file = model_id + ".zip"
+    # Save the downloaded model artifact zip file in current directory
+    with open(artifact_file,'wb') as zfile:
+        for chunk in get_model_artifact_content_response.data.raw.stream(1024 * 1024, decode_content=False):
+            zfile.write(chunk)
+    print(f"Saved model artifact zip file: {artifact_file}")
 
-# %%
+    # Check if model directory exists; if so delete and recreate it else create it
+    zfile_path =  "./" + model_id
+    if not os.path.isdir(zfile_path):
+        os.makedirs(zfile_path)
+        print("Created model artifact directory")
+    else:
+        shutil.rmtree(zfile_path)
+        os.makedirs(zfile_path)
+        print("Deleted model artifact directory & recreated it")
 
+    # Unzip the model artifact file into the model id folder -
+    with ZipFile(artifact_file,'r') as zfile:
+        zfile.extractall(zfile_path)
+    print(f"Extracted model artifacts from zip file into directory: {zfile_path}")
 
-def score(raw_data, model_name):
-    # Get predictions and explanations for each data point
-    data = pd.read_json(raw_data)
+    # Delete the artifact zip file
+    os.remove(artifact_file)
+    print(f"Deleted model artifact zip file: {artifact_file}")
+
+"""
+  Retrieves the model metadata
+
+  Parameters:
+  model_id: OCI Data Science Model OCID
+"""
+def get_model_metadata(model_id):
+    file_path = './' + model_id + '/runtime.yaml'
     
-    model_path = Model.get_model_path(model_name, version=None, _workspace=ws)
+    # Load the model artifacts if model directory is not present
+    if not os.path.isfile(file_path):
+        load_model(model_id)
 
-    model = joblib.load(model_path)
+    metadata = ''
+    with open(file_path, 'r') as f:
+        metadata = yaml.safe_load(f)
 
-    # Make prediction
-    predictions = model.predict(data)
+    return metadata
 
-    # You can return any data type as long as it is JSON-serializable
-    return {'results': predictions.tolist()}
+"""
+  Scores the data points sent in the payload using the respective model.
 
+  Parameters:
+  raw_data: Data in the format expected by the model object
+  model_id: OCI Data Science Model OCID
+"""
+def score(raw_data, model_id):
+    file_path = './' + model_id + '/score.py'
+    
+    # Load the model artifacts if model directory is not present
+    if not os.path.isfile(file_path):
+        load_model(model_id)
+
+    module_name = 'score'
+
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    # Get predictions and explanations for each data point
+    results = module.predict(raw_data)
+    results_data = dict()
+    results_data["data"] = results
+
+    return results_data
 
 # ### API
 
-# %%
-
-
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-import pandas as pd
 app = Flask(__name__)
 api = Api(app)
 
-
-# %%
-
-
 parser = reqparse.RequestParser()
 parser.add_argument('data', location='json')
-parser.add_argument('model_name', required=True)
+parser.add_argument('model_id', required=True)
 
+# ### API Resource Handler Classes
 
-# %%
+class LoadModel(Resource):
+    def get(self, model_id):
+        load_model(model_id)
 
+        results = { 
+            "status": "Model loaded OK"
+        }
+        return results, 200  # return data with 200 OK
+
+class GetModelMetadata(Resource):
+    def get(self, model_id):
+        results = get_model_metadata(model_id)
+        return results, 200  # return data with 200 OK
 
 class Score(Resource):
-    def get(self):
-        data = 'TEST_MESSAGE'
-        return {'data': data}, 200  # return data and 200 OK code
-    
     def post(self):
         args = parser.parse_args()
         data = args['data']
-        model_name = args['model_name']
-        results = score(data, model_name)
+        model_id = args['model_id']
+        print(f"model_id: {model_id}; data={data}")
+        results = score(data, model_id)
         return results, 200  # return data with 200 OK
-
-
-# %%
-
 
 class HealthCheck(Resource):
     def get(self):
-        details = json.dumps(ws.get_details())
-        return {'HealthStatus':'Okay', 'WorkspaceDetails': details}, 200
+        results = {
+            "OCI Connectivity": "OK",
+            "HealthStatus": "OK"
+        }
+        return results, 200
 
+# ### API Resource URIs
 
-# %%
-
-
+api.add_resource(LoadModel, '/loadmodel/<string:model_id>')
+api.add_resource(GetModelMetadata, '/getmodelinfo/<string:model_id>')
 api.add_resource(Score, '/score')
 api.add_resource(HealthCheck, '/healthcheck')
 
-
-# %%
-
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
-
-
-# %%
+    #app.run(host='0.0.0.0', debug=True, port=8080)
+    app.run(host='0.0.0.0', port=8080)
