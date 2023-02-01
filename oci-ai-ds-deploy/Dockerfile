@@ -8,26 +8,33 @@
 # NOTES:
 #
 #
-FROM oraclelinux
+FROM oraclelinux:9
 MAINTAINER Ganesh Radhakrishnan ganrad01@gmail.com
 
 ARG condaurl
 ARG condaenv=generalml_p38_cpu_v1
 
-# Install curl
-RUN yum install curl
-
 # Create the workdir = /envs
 WORKDIR /envs
 
-# Download and install the ML conda environment
+# Download the ML conda environment (tar file)
 RUN curl -X GET $condaurl --output $condaenv.tar
 
-# Unpack the conda env
-RUN mkdir $condaenv && tar -xvf $condaenv.tar -C ./$condaenv
+# Create the conda env directory
+RUN mkdir $condaenv 
 
-# Activate the conda env
-RUN source activate /envs/$condaenv/bin/activate
+RUN ls -lt
 
-# Print the python version
-RUN python --version
+# Unpack the conda env tar file
+RUN tar -xvf $condaenv.tar --directory ./$condaenv
+
+# Remove the tar file
+RUN rm $condaenv.tar
+
+ENV CONDA_HOME=$condaenv
+
+SHELL ["/bin/bash","-c"]
+ENTRYPOINT source /envs/$CONDA_HOME/bin/activate && \
+           python -c "import sys; print(sys.version)"
+
+#python -c "import numpy; print('success!')"
