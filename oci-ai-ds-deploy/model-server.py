@@ -37,6 +37,9 @@ import yaml
 config = oci.config.from_file(os.environ['OCI_CONFIG_FILE_LOCATION'])
 print("Loaded OCI client file")
 
+# Set the server port
+server_port=int(os.environ['MODEL_SERVER_PORT'])
+
 # Initialize data science service client with config file
 data_science_client = oci.data_science.DataScienceClient(config)
 
@@ -184,5 +187,4 @@ api.add_resource(Score, '/score')
 api.add_resource(HealthCheck, '/healthcheck')
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', debug=True, port=8080)
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=server_port)
