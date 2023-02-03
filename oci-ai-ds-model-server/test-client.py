@@ -2,7 +2,8 @@ import requests
 import json
 
 endpoint = 'http://127.0.0.1:8000/score/'
-model_id = 'ocid1.datasciencemodel.oc1.phx.amaaaaaaor7l3jiaupzleckeogmotcnpjhdrmyejnfuk2eshmvqi4ytr6o2a'
+#model_id = 'ocid1.datasciencemodel.oc1.phx.amaaaaaaor7l3jiaupzleckeogmotcnpjhdrmyejnfuk2eshmvqi4ytr6o2a'
+model_id = 'ocid1.datasciencemodel.oc1.phx.amaaaaaaor7l3jiajkwppvtdozjttrlea556enomqgopd5pkroplu4mlqplq'
 
 print("POST to model-server url", endpoint)
 
@@ -25,5 +26,5 @@ resp = requests.post(endpoint,headers=headers,data=json.dumps(payload),params=pa
 
 # Load the returned json response to a dict
 result_dict = json.loads(resp.text)
-print('RESPONSE Json:')
+print(f"status={resp.status_code}; RESPONSE Json:")
 print(json.dumps(result_dict,indent=4,sort_keys=True))
