@@ -35,15 +35,15 @@
 FROM oraclelinux:9
 LABEL name="OCI Data Science model server"
 LABEL version="1.0"
-LABEL description="This container image exposes API endpoints for loading ML models registered in OCI Data Science and performing inference against them"
+LABEL description="This container image exposes API endpoints for a) Loading pre-trained ML models registered in OCI Data Science Model Catalog and b) Performing inference with live data"
 LABEL author="Ganesh Radhakrishnan" email="ganrad01@gmail.com" dated="02-01-2023" license="MIT"
 
 # (Required) OCI Object store PAR URL for downloading the ML conda env. This
 # value has to be passed in during container build time.
 ARG condaurl
 
-# (Optional) Conda environment name
-ARG condaenv=generalml_p38_cpu_v1
+# (Required) Conda environment name
+ARG condaenv
 
 # (Required) OCI CLI/SDK config & pem file paths have to passed in during 
 # container build time
@@ -52,13 +52,13 @@ ARG oci_pem_filepath
 
 # ### Following env variables can be overriden by user at run time ###
 
-# (Optional) Uvicorn Server listen port.
+# (Optional) Uvicorn Server listen port - Default 8000
 ENV UVICORN_PORT=8000
 
 # (Optional) FastAPI Uvicorn log level - Default info
 ENV UVICORN_LOG_LEVEL=info
 
-# (Optional) Uvicorn workers
+# (Optional) Uvicorn workers - Default 1
 ENV UVICORN_WORKERS=1
 
 # (Optional) Uvicorn server concurrency
@@ -67,7 +67,7 @@ ENV UVICORN_WORKERS=1
 # Create the conda environment workdir = /envs
 WORKDIR /envs
 
-# Download the ML conda environment (tar file)
+# Download the ML conda environment (tar file) using OCI Obj. Storage PAR URL
 RUN curl -X GET $condaurl --output $condaenv.tar
 
 # Create the conda env directory
@@ -97,7 +97,7 @@ COPY $oci_config_filepath .
 COPY $oci_pem_filepath .
 
 # Listen on port ~ MODEL_SERVER_PORT
-EXPOSE $MODEL_SERVER_PORT/tcp
+EXPOSE $UVICORN_PORT/tcp
 
 # Set the default shell (bash) and then run the model server
 SHELL ["/bin/bash","-c"]

@@ -24,16 +24,21 @@
 
 # ### Model Scoring Server for models created using OCI Data Science ###
 
+from importlib.metadata import version
 import importlib.util
 import json
 import logging
 import os
 import shutil
+import sys
 import time
 from zipfile import ZipFile
 
 import oci
 import yaml
+
+# ### Constants
+SERVER_VERSION="0.0.1"
 
 # ### Configure logging ###
 loglevel = os.getenv('LOG_LEVEL', 'INFO') # one of DEBUG,INFO,WARNING,ERROR,CRITICAL
@@ -55,12 +60,12 @@ config = oci.config.from_file(os.environ['OCI_CONFIG_FILE_LOCATION'])
 logger.info("Loaded OCI client config file")
 
 # Set the server port
-server_port=int(os.environ['MODEL_SERVER_PORT'])
+server_port=int(os.environ['UVICORN_PORT'])
 
 # Initialize data science service client with config file
 data_science_client = oci.data_science.DataScienceClient(config)
 
-# ### Model Server API ###
+# ### Configure FastAPI Server
 from fastapi import Request, FastAPI, HTTPException, Body
 
 api_description="""
@@ -74,12 +79,16 @@ tags_metadata = [
         "description": "Liveness probe - Check if the API is up and runnning (alive)"
     },
     {
+        "name": "Model Server Info.",
+        "description": "Get model server information"
+    },
+    {
         "name": "Load Model",
         "description": "Load a ML model registered in OCI Data Science Catalog"
     },
     {
         "name": "Get Model Info.",
-        "description": "Get model metadata"
+        "description": "Get an registered model's metadata"
     },
     {
         "name": "List Models",
@@ -91,6 +100,7 @@ tags_metadata = [
     }
 ]
 
+# Initialize the FastAPI Unicorn Server
 app = FastAPI(
     title="OCI Data Science ML Model Server",
     description=api_description,
@@ -107,6 +117,7 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
+# ### Model Server API ###
 """
   Returns current health status of model server
 """
@@ -115,6 +126,24 @@ async def health_check():
     results = {
          "OCI Connectivity": "OK",
          "HealthStatus": "OK"
+    }
+    return results
+
+"""
+  Returns model server info.
+"""
+@app.get("/serverinfo/", tags=["Model Server Info."], status_code=200)
+async def server_info():
+    results = {
+         "Inf. Conda Environment": os.getenv("CONDA_HOME"),
+         "Python": sys.version,
+         "Server Version": SERVER_VERSION,
+         "Server Root": os.getcwd(),
+         "Web Server": "Uvicorn {ws_version}".format(ws_version = version('uvicorn')),
+         "Framework": "FastAPI {frm_version}".format(frm_version = version('fastapi')),
+         "Listen Port": server_port,
+         "Log Level": os.getenv("UVICORN_LOG_LEVEL"),
+         "Workers": os.getenv("UVICORN_WORKERS")
     }
     return results
 
