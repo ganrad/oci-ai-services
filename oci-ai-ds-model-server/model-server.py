@@ -83,7 +83,7 @@ tags_metadata = [
     },
     {
         "name": "List Models",
-        "description": "List model artifacts in an OCI Compartment & Project"
+        "description": "List model artifacts registered in a OCI Data Science Model Catalog"
     },
     {
         "name": "Predict Outcomes",
