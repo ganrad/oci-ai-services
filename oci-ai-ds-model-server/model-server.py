@@ -71,11 +71,11 @@ trained in OCI Data Science Platform.
 tags_metadata = [
     {
         "name": "Health Check",
-        "description": "Liveness probe - Operation to check if the API is up and runnning (alive)"
+        "description": "Liveness probe - Check if the API is up and runnning (alive)"
     },
     {
         "name": "Load Model",
-        "description": "Operation to load a ML model registered in OCI Data Science Catalog"
+        "description": "Load a ML model registered in OCI Data Science Catalog"
     },
     {
         "name": "Get Model Info.",
@@ -86,8 +86,8 @@ tags_metadata = [
         "description": "List model artifacts in an OCI Compartment & Project"
     },
     {
-        "name": "Predict",
-        "description": "Run inferences with data on a trained model and predict outcomes"
+        "name": "Predict Outcomes",
+        "description": "Use live inference data to run predictions against a trained ML model"
     }
 ]
 
@@ -103,7 +103,8 @@ app = FastAPI(
     license_info={
         "name": "The MIT License",
         "url": "https://opensource.org/licenses/MIT"
-    }
+    },
+    openapi_tags=tags_metadata
 )
 
 """
@@ -227,7 +228,7 @@ async def list_models(compartment_id: str, project_id: str, no_of_models=400):
   model_id: OCI Data Science Model OCID
   Request body: Data in the format expected by the model object
 """
-@app.post("/score/", tags=["Predict"], status_code=200)
+@app.post("/score/", tags=["Predict Outcomes"], status_code=200)
 #async def score(model_id: str, request: Request): (also works!)
 async def score(model_id: str, data: dict = Body()):
     # Get predictions and explanations for each data point
