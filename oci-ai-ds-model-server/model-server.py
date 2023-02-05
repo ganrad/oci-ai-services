@@ -100,7 +100,7 @@ tags_metadata = [
     }
 ]
 
-# Initialize the FastAPI Unicorn Server
+# Initialize the FastAPI Uvicorn Server
 app = FastAPI(
     title="OCI Data Science ML Model Server",
     description=api_description,
