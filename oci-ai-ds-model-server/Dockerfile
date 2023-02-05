@@ -52,6 +52,9 @@ ARG oci_pem_filepath
 
 # ### Following env variables can be overriden by user at run time ###
 
+# OCI Config file location
+ENV OCI_CONFIG_FILE_LOCATION=$oci_config_filepath
+
 # (Optional) Uvicorn Server listen port - Default 8000
 ENV UVICORN_PORT=8000
 
@@ -103,4 +106,4 @@ EXPOSE $UVICORN_PORT/tcp
 SHELL ["/bin/bash","-c"]
 ENTRYPOINT source /envs/$CONDA_HOME/bin/activate && \
            pip install -r /apps/requirements.txt && \
-           uvicorn model-server:app --port $UVICORN_PORT --log-level $UVICORN_LOG_LEVEL --workers $UVICORN_WORKERS
+           uvicorn model-server:app --host 0.0.0.0 --port $UVICORN_PORT --log-level $UVICORN_LOG_LEVEL --workers $UVICORN_WORKERS

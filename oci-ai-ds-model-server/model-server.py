@@ -50,7 +50,7 @@ logger = logging.getLogger('model-server')
 logger.setLevel(nloglevel)
 
 ch = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(levelname)s: %(asctime)s - %(name)s - %(message)s')
 ch.setFormatter(formatter)
 
 logger.addHandler(ch)
