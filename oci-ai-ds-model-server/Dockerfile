@@ -61,9 +61,6 @@ ENV UVICORN_PORT=8000
 # (Optional) FastAPI Uvicorn log level - Default info
 ENV UVICORN_LOG_LEVEL=info
 
-# (Optional) Uvicorn workers - Default 1
-ENV UVICORN_WORKERS=1
-
 # (Optional) Uvicorn server concurrency
 # ENV UVICORN_CONCURRENCY=
 
@@ -106,4 +103,4 @@ EXPOSE $UVICORN_PORT/tcp
 SHELL ["/bin/bash","-c"]
 ENTRYPOINT source /envs/$CONDA_HOME/bin/activate && \
            pip install -r /apps/requirements.txt && \
-           uvicorn model-server:app --host 0.0.0.0 --port $UVICORN_PORT --log-level $UVICORN_LOG_LEVEL --workers $UVICORN_WORKERS
+           uvicorn model-server:app --host 0.0.0.0 --port $UVICORN_PORT --log-level $UVICORN_LOG_LEVEL
