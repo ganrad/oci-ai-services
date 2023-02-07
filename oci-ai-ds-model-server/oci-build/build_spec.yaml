@@ -5,7 +5,8 @@ shell: bash
 env:
   variables:
     "condaurl": "https://objectstorage.us-phoenix-1.oraclecloud.com/p/tmC4mBuowJhvSdy96FzFCi_f-li6wX1QM_giivn7yEujpTdgc6JSqahpabENAGw4/n/ax3dvjxgkemg/b/ds-test-bucket-20230124-1135/o/conda_environments%2Fcpu%2FGeneral%20Machine%20Learning%20for%20CPUs%20on%20Python%203.8%2F1.0%2Fgeneralml_p38_cpu_v1"
-
+  vaultVariables:
+    "oci-config": "ocid1.vaultsecret.oc1.iad.amaaaaaanif7xwiagiean6ifa3oibeljiwut4swcja7nwhlmxp3xcmefreba"
 steps:
   - type: Command
     name: "Build app"
@@ -19,4 +20,7 @@ steps:
       echo "Conda Environment: ${condaenv}"
       echo "ls -l"
       ls -lt
+      echo "-----"
+      echo ${oci-config} >> oci-config
+      cat oci-config
 
