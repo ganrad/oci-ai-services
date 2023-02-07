@@ -16,7 +16,8 @@ steps:
       echo "Build Run ID: $OCI_BUILD_RUN_ID"
       echo "Source Directory: $OCI_PRIMARY_SOURCE_DIR"
       echo "Working Directory: $OCI_WORKING_DIR"
-      echo "Conda env URL: $condaurl"
+      echo "Conda Env URL: $condaurl"
+      echo "Conda Environment: $condaenv"
       echo "ls -l"
       ls -lt
 
