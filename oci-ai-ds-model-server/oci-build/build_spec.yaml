@@ -1,0 +1,17 @@
+version: 0.1             
+component: build
+timeoutInSeconds: 1000
+shell: bash           
+
+steps:
+  - type: Command
+    name: "Build app"
+    command: |
+      echo "Pipeline ID: $OCI_PIPELINE_ID"
+      echo "Stage ID: $OCI_STAGE_ID"
+      echo "Build Run ID: $OCI_BUILD_RUN_ID"
+      echo "Source Directory: $OCI_PRIMARY_SOURCE_DIR"
+      echo "Working Directory: $OCI_WORKING_DIR"
+      echo "ls -l"
+      ls -lt
+
