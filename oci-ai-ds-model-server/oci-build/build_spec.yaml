@@ -4,7 +4,7 @@ timeoutInSeconds: 1000
 shell: bash           
 env:
   variables:
-    - condaurl: "https://objectstorage.us-phoenix-1.oraclecloud.com/"
+    - condaurl: "hello-world"
 
 steps:
   - type: Command
