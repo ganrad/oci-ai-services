@@ -55,7 +55,7 @@ steps:
       echo "Conda Env URL: $condaurl"
       echo "Conda Environment: ${conda_env}"
       echo "----- directory listing ----"
-      ls -lt ./oci-ai-ds-model-server
+      ls -lt
 
   - type: Command
     name: "Build the container image"
