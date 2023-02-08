@@ -2,17 +2,18 @@ version: 0.1
 component: build
 timeoutInSeconds: 1000
 shell: bash           
+failImmediatelyOnError: true
 env:
   variables:
     "condaurl": "https://objectstorage.us-phoenix-1.oraclecloud.com/p/tmC4mBuowJhvSdy96FzFCi_f-li6wX1QM_giivn7yEujpTdgc6JSqahpabENAGw4/n/ax3dvjxgkemg/b/ds-test-bucket-20230124-1135/o/conda_environments%2Fcpu%2FGeneral%20Machine%20Learning%20for%20CPUs%20on%20Python%203.8%2F1.0%2Fgeneralml_p38_cpu_v1"
 inputArtifacts:
   - name: oci-config
     type: GENERIC_ARTIFACT
-    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiawr7j2qfzftl5ow4llzpa3ya6jg5ju2k7p3ushbbhyeda
+    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwia3l4nnu2rhzit7xlsk2zw5qymjqblqb2c2dj5czr5lasa
     location: ${OCI_PRIMARY_SOURCE_DIR}/config
   - name: oci-pem
     type: GENERIC_ARTIFACT
-    artifactId: ocid1.devopsdeployartifact.oc1.iad.amaaaaaanif7xwiawjcvxohezty4f5rx7clcowofbfi7xak3qy6gtmoo5i6a
+    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiawr7j2qfzftl5ow4llzpa3ya6jg5ju2k7p3ushbbhyeda
     location: ${OCI_PRIMARY_SOURCE_DIR}/OCI-API-01-25-20-14.pem
 
 steps:
