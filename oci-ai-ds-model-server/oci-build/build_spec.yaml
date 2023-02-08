@@ -21,6 +21,5 @@ steps:
       echo "ls -l"
       ls -lt
       echo "-----"
-      echo ${oci_config} >> oci-config
-      cat oci-config
+      echo "OCI Config:" ${oci_config}
 
