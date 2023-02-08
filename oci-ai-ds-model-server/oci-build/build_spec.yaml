@@ -10,6 +10,10 @@ inputArtifacts:
     type: GENERIC_ARTIFACT
     artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiawr7j2qfzftl5ow4llzpa3ya6jg5ju2k7p3ushbbhyeda
     location: ${OCI_PRIMARY_SOURCE_DIR}/config
+  - name: oci-pem
+    type: GENERIC_ARTIFACT
+    artifactId: ocid1.devopsdeployartifact.oc1.iad.amaaaaaanif7xwiawjcvxohezty4f5rx7clcowofbfi7xak3qy6gtmoo5i6a
+    location: ${OCI_PRIMARY_SOURCE_DIR}/OCI-API-01-25-20-14.pem
 
 steps:
   - type: Command
@@ -24,5 +28,7 @@ steps:
       echo "Conda Environment: ${condaenv}"
       echo "----- directory listing ----"
       ls -lt
+      echo "--- Contents of oci-config ---"
+      cat config
       
 
