@@ -1,3 +1,27 @@
+# Name: OCI DevOps build spec file
+# Description: This is a build spec file for containerizing the multi-model
+# inference server.
+#
+# Important Notes:
+# Update the following variables before running the build pipeline
+# condaurl:  Specify the PAR URL (Object Store location) where the Conda Env.
+# zip file is stored.
+#
+# Prior to running the build pipeline, make sure to define the following
+# parameters.
+# image_tag_name: Image name tag to be assiged to the container image after it
+# is built.  The container image will be tagged with this name (~ version) in
+# OCI Image Repository.
+# conda_env: Name of the Conda environment.  Although this parameter is 
+# mandatory, any name can be used.
+#
+# Author: OCI AI Services product team
+# Dated: 02-05-2023
+#
+# Updates:
+#
+# ---------------------------------------------------------------------------
+
 version: 0.1             
 component: build
 timeoutInSeconds: 1000
