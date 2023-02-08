@@ -24,7 +24,7 @@ steps:
       echo "Stage ID: $OCI_STAGE_ID"
       echo "Build Run ID: $OCI_BUILD_RUN_ID"
       echo "Source Directory: $OCI_PRIMARY_SOURCE_DIR"
-      echo "Working Directory: $OCI_WORKING_DIR"
+      # echo "Working Directory: $OCI_WORKING_DIR"
       echo "Conda Env URL: $condaurl"
       echo "Conda Environment: ${condaenv}"
       echo "----- directory listing ----"
