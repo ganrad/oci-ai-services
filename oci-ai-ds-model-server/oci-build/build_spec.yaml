@@ -37,11 +37,11 @@ inputArtifacts:
   - name: oci-config
     type: GENERIC_ARTIFACT
     artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiapu2zxvrihnzslt2bzxrbn7dsnxp72wnza25qfiip43xq
-    location: ${OCI_PRIMARY_SOURCE_DIR}/config
+    location: ${OCI_PRIMARY_SOURCE_DIR}/oci-ai-ds-model-server/config
   - name: oci-pem
     type: GENERIC_ARTIFACT
     artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiawr7j2qfzftl5ow4llzpa3ya6jg5ju2k7p3ushbbhyeda
-    location: ${OCI_PRIMARY_SOURCE_DIR}/oci-api.pem
+    location: ${OCI_PRIMARY_SOURCE_DIR}/oci-ai-ds-model-server/oci-api.pem
 
 steps:
   - type: Command
@@ -61,7 +61,7 @@ steps:
     name: "Build the container image"
     command: |
       echo "Starting the model server image build ..."
-      docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" -t oci-ds-model-server .
+      docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" -t oci-ds-model-server ./oci-ai-ds-model-server
       echo "Image build completed OK"
    
 outputArtifacts:
