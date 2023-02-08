@@ -5,12 +5,15 @@ shell: bash
 env:
   variables:
     "condaurl": "https://objectstorage.us-phoenix-1.oraclecloud.com/p/tmC4mBuowJhvSdy96FzFCi_f-li6wX1QM_giivn7yEujpTdgc6JSqahpabENAGw4/n/ax3dvjxgkemg/b/ds-test-bucket-20230124-1135/o/conda_environments%2Fcpu%2FGeneral%20Machine%20Learning%20for%20CPUs%20on%20Python%203.8%2F1.0%2Fgeneralml_p38_cpu_v1"
-  vaultVariables:
-    "oci_config": "ocid1.vaultsecret.oc1.iad.amaaaaaanif7xwiagiean6ifa3oibeljiwut4swcja7nwhlmxp3xcmefreba"
-    "oci_pem": "ocid1.vaultsecret.oc1.iad.amaaaaaanif7xwiaxesh7nhjtlpwnhyrnlvhbcfel3qg5eqk457hx2auyi3a"
+inputArtifacts:
+  - name: oci-config
+    type: GENERIC_ARTIFACT
+    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiawr7j2qfzftl5ow4llzpa3ya6jg5ju2k7p3ushbbhyeda
+    location: ${OCI_PRIMARY_SOURCE_DIR}/config
+
 steps:
   - type: Command
-    name: "Build app"
+    name: "Build Multi-model Inference Server (MMIS) container image"
     command: |
       echo "Pipeline ID: $OCI_PIPELINE_ID"
       echo "Stage ID: $OCI_STAGE_ID"
@@ -19,14 +22,6 @@ steps:
       echo "Working Directory: $OCI_WORKING_DIR"
       echo "Conda Env URL: $condaurl"
       echo "Conda Environment: ${condaenv}"
-      echo "-----"
-      echo ${oci_config} >> oci-config
-      echo "oci-config contents below"
-      cat oci-config
-      echo "-----"
-      echo ${oci_pem} >> oci-pem
-      echo "oci-pem contents below"
-      cat oci-pem
       echo "----- directory listing ----"
       ls -lt
       
