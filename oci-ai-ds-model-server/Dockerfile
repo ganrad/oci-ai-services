@@ -33,4 +33,4 @@
 #
 #
 FROM busybox
-echo "Hello World!!"
+RUN echo "Hello World!!"
