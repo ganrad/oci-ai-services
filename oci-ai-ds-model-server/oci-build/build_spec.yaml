@@ -9,7 +9,7 @@ env:
 inputArtifacts:
   - name: oci-config
     type: GENERIC_ARTIFACT
-    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwia3l4nnu2rhzit7xlsk2zw5qymjqblqb2c2dj5czr5lasa
+    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwia6x2ufjuqpvn2fbceyannwkpdml5r7ore6ypkylp4hv6q
     location: ${OCI_PRIMARY_SOURCE_DIR}/config
   - name: oci-pem
     type: GENERIC_ARTIFACT
