@@ -31,7 +31,7 @@ env:
   variables:
     "condaurl": "https://objectstorage.us-phoenix-1.oraclecloud.com/p/tmC4mBuowJhvSdy96FzFCi_f-li6wX1QM_giivn7yEujpTdgc6JSqahpabENAGw4/n/ax3dvjxgkemg/b/ds-test-bucket-20230124-1135/o/conda_environments%2Fcpu%2FGeneral%20Machine%20Learning%20for%20CPUs%20on%20Python%203.8%2F1.0%2Fgeneralml_p38_cpu_v1"
   exportedVariables:
-    - tag_name: ${image_tag_name}
+    - tag_name
 
 inputArtifacts:
   - name: oci-config
@@ -60,6 +60,8 @@ steps:
   - type: Command
     name: "Build the container image"
     command: |
+      tag_name=${image_tag_name}
+      echo "Image tag name set to: ${tag_name}"
       echo "Starting the model server image build ..."
       docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" -t oci-ds-model-server ./oci-ai-ds-model-server
       echo "Image build completed OK"
