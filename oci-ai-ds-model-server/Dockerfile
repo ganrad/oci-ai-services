@@ -32,5 +32,75 @@
 # NOTES:
 #
 #
-FROM busybox
-RUN echo "Hello World"
+FROM oraclelinux:9
+LABEL name="OCI Data Science model server"
+LABEL version="1.0"
+LABEL description="This container image exposes API endpoints for a) Loading pre-trained ML models registered in OCI Data Science Model Catalog and b) Performing inference with live data"
+LABEL author="Ganesh Radhakrishnan" email="ganrad01@gmail.com" dated="02-01-2023" license="MIT"
+
+# (Required) OCI Object store PAR URL for downloading the ML conda env. This
+# value has to be passed in during container build time.
+ARG condaurl
+
+# (Required) Conda environment name
+ARG condaenv
+
+# (Required) OCI CLI/SDK config & pem file paths have to passed in during 
+# container build time
+ARG oci_config_filepath
+ARG oci_pem_filepath
+
+# ### Following env variables can be overriden by user at run time ###
+
+# OCI Config file location
+ENV OCI_CONFIG_FILE_LOCATION=$oci_config_filepath
+
+# (Optional) Uvicorn Server listen port - Default 8000
+ENV UVICORN_PORT=8000
+
+# (Optional) FastAPI Uvicorn log level - Default info
+ENV UVICORN_LOG_LEVEL=info
+
+# (Optional) Uvicorn server concurrency
+# ENV UVICORN_CONCURRENCY=
+
+# Create the conda environment workdir = /envs
+WORKDIR /envs
+
+# Download the ML conda environment (tar file) using OCI Obj. Storage PAR URL
+RUN curl -X GET $condaurl --output $condaenv.tar
+
+# Create the conda env directory
+RUN mkdir $condaenv 
+
+# Unpack the conda env tar file
+RUN tar -xvf $condaenv.tar --directory ./$condaenv
+
+# List the contents of conda env directory
+RUN ls -lt ./$condaenv
+
+# Remove the downloaded conda env tar file
+RUN rm $condaenv.tar
+
+# Set conda home (env variable)
+ENV CONDA_HOME=$condaenv
+
+# Create the apps workdir = /apps
+WORKDIR /apps
+
+# Copy the API server to the container image
+COPY ./requirements.txt .
+COPY ./model-server.py .
+
+# Copy the OCI config and pem file to the container image
+COPY $oci_config_filepath .
+COPY $oci_pem_filepath .
+
+# Listen on port ~ MODEL_SERVER_PORT
+EXPOSE $UVICORN_PORT/tcp
+
+# Set the default shell (bash) and then run the model server
+SHELL ["/bin/bash","-c"]
+ENTRYPOINT source /envs/$CONDA_HOME/bin/activate && \
+           pip install -r /apps/requirements.txt && \
+           uvicorn model-server:app --host 0.0.0.0 --port $UVICORN_PORT --log-level $UVICORN_LOG_LEVEL

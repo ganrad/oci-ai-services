@@ -63,8 +63,8 @@ steps:
       tag_name=${image_tag_name}
       echo "Image tag name set to: ${tag_name}"
       echo "Starting the model server image build ..."
-      docker build -t oci-ds-model-server ./oci-ai-ds-model-server
-      # docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" -t oci-ds-model-server ./oci-ai-ds-model-server
+      # docker build -t oci-ds-model-server ./oci-ai-ds-model-server
+      docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" -t oci-ds-model-server ./oci-ai-ds-model-server
       echo "Image build completed OK"
    
 outputArtifacts:
