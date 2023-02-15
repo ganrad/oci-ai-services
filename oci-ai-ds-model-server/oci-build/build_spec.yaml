@@ -4,14 +4,17 @@
 #
 # Important Notes:
 # Update the following variables before running the build pipeline
+#
 # condaurl:  Specify the PAR URL (Object Store location) where the Conda Env.
 # zip file is stored.
 #
 # Prior to running the build pipeline, make sure to define the following
 # parameters.
+#
 # image_tag_name: Image name tag to be assiged to the container image after it
 # is built.  The container image will be tagged with this name (~ version) in
 # OCI Image Repository.
+#
 # conda_env: Name of the Conda environment.  Although this parameter is 
 # mandatory, any name can be used.
 #
@@ -29,7 +32,7 @@ shell: bash
 failImmediatelyOnError: true
 env:
   variables:
-    "condaurl": ${conda_tar_file}
+    "condaurl": "OCI Object Store PAR URI pointing to conda env tar file"
   exportedVariables:
     - tag_name
 
@@ -52,6 +55,7 @@ steps:
       echo "Build Run ID: $OCI_BUILD_RUN_ID"
       echo "Source Directory: $OCI_PRIMARY_SOURCE_DIR"
       # echo "Working Directory: $OCI_WORKING_DIR"
+      condaurl = "${obj_store_uri}${conda_file_location}"
       echo "Conda Env URL: $condaurl"
       echo "Conda Environment: ${conda_env}"
       echo "----- List directory contents ----"
