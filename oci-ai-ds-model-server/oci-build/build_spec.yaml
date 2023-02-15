@@ -2,18 +2,20 @@
 # Description: This is a build spec file for containerizing the multi-model
 # inference server.
 #
-# Important Notes:
-# Update the following variables before running the build pipeline
-#
-# condaurl:  Specify the PAR URL (Object Store location) where the Conda Env.
-# zip file is stored.
-#
+# IMPORTANT NOTES:
 # Prior to running the build pipeline, make sure to define the following
 # parameters.
 #
+# obj_store_uri: The PAR URI for OCI Object Store Bucket. Should be of the form
+# https://objectstorage.<oci-region>.oraclecloud.com
+# eg., https://objectstorage.us-phoenix-1.oraclecloud.com
+# 
+# conda_file_location: Remainder of the PAR URL pointing to the location of
+# the conda env. tar file. This string should not exceed 250 chars.
+#
 # image_tag_name: Image name tag to be assiged to the container image after it
 # is built.  The container image will be tagged with this name (~ version) in
-# OCI Image Repository.
+# OCI Container Registry.
 #
 # conda_env: Name of the Conda environment.  Although this parameter is 
 # mandatory, any name can be used.
@@ -54,7 +56,6 @@ steps:
       echo "Stage ID: $OCI_STAGE_ID"
       echo "Build Run ID: $OCI_BUILD_RUN_ID"
       echo "Source Directory: $OCI_PRIMARY_SOURCE_DIR"
-      # echo "Working Directory: $OCI_WORKING_DIR"
       condaurl="${obj_store_uri}${conda_file_location}"
       echo "Conda Env URL: $condaurl"
       echo "Conda Environment: ${conda_env}"
