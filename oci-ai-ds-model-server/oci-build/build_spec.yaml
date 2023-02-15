@@ -55,7 +55,7 @@ steps:
       echo "Build Run ID: $OCI_BUILD_RUN_ID"
       echo "Source Directory: $OCI_PRIMARY_SOURCE_DIR"
       # echo "Working Directory: $OCI_WORKING_DIR"
-      condaurl = "${obj_store_uri}${conda_file_location}"
+      condaurl="${obj_store_uri}${conda_file_location}"
       echo "Conda Env URL: $condaurl"
       echo "Conda Environment: ${conda_env}"
       echo "----- List directory contents ----"
