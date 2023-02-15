@@ -55,6 +55,10 @@ ch.setFormatter(formatter)
 
 logger.addHandler(ch)
 
+# ### Global Vars
+reqs_success = 0
+reqs_fail = 0
+
 # ### Configure OCI client ###
 config = oci.config.from_file(os.environ['OCI_CONFIG_FILE_LOCATION'])
 logger.info("Loaded OCI client config file")
@@ -102,7 +106,7 @@ tags_metadata = [
 
 # Initialize the FastAPI Uvicorn Server
 app = FastAPI(
-    title="OCI Data Science ML Model Server",
+    title="OCI Data Science Multi Model Inference Server",
     description=api_description,
     version="0.0.1",
     contact={
@@ -143,7 +147,16 @@ async def server_info():
          "Framework": "FastAPI {frm_version}".format(frm_version = version('fastapi')),
          "Listen Port": server_port,
          "Log Level": os.getenv("UVICORN_LOG_LEVEL"),
-         "Workers": os.getenv("UVICORN_WORKERS")
+         # "Workers": os.getenv("UVICORN_WORKERS")
+         "Instance Info": {
+           "Node Name": os.getenv("NODE_NAME"),
+           "Namespace": os.getenv("POD_NAMESPACE"),
+           "Instance Name": os.getenv("POD_NAME"),
+           "Instance IP": os.getenv("POD_IP"),
+           "Service Account": os.getenv("POD_SVC_ACCOUNT"),
+           "Requests Succeeded": reqs_success,
+           "Requests Failed": reqs_fail
+         }
     }
     return results
 
@@ -263,14 +276,19 @@ async def score(model_id: str, data: dict = Body()):
     # Get predictions and explanations for each data point
     # data = await request.json(); # returns body as dictionary
     # data = await request.body(); # returns body as string
+    global reqs_success
+
     logger.debug(f"Inference Inp. Data: {data}")
     if not data:
         raise HTTPException(status_code=400, detail="Bad Request. No data sent in the request body!")
 
     file_path = './' + model_id + '/score.py'
+    ld_time = 0
     # Load the model artifacts if model directory is not present
     if not os.path.isfile(file_path):
+        st_time = time.time()
         model_status = await load_model(model_id)
+        ld_time = time.time() - st_time
         logger.debug(f"Load model results: {model_status}")
 
     module_name = 'score'
@@ -285,7 +303,9 @@ async def score(model_id: str, data: dict = Body()):
 
     results_data = dict()
     results_data["data"] = results
-    results_data["time"] = en_time
+    results_data["load_time"] = ld_time
+    results_data["inference_time"] = en_time
     logger.debug(f"Inference Out. Data: {results_data}")
 
+    reqs_success += 1
     return results_data
