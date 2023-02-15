@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#
+# -------------------------------------------
 # An API server for running inferences against ML models created in OCI Data
 # Science.
 #
@@ -31,6 +31,7 @@
 #
 # NOTES:
 #
+# -------------------------------------------
 #
 FROM oraclelinux:9
 LABEL name="OCI Data Science model server"
