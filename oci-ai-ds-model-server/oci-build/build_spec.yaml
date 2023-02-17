@@ -1,6 +1,6 @@
-# Name: OCI DevOps build spec file
-# Description: This is a build spec file for containerizing the multi-model
-# inference server.
+# Name: build_spec.yaml
+# Description: OCI DevOps build spec. file. This is a build spec is for 
+# containerizing the multi-model inference server.
 #
 # IMPORTANT NOTES:
 # Prior to running the build pipeline, make sure to define the following

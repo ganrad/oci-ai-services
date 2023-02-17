@@ -22,9 +22,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# ### Model Scoring Server for models created using OCI Data Science ###
+# ###
+# An Inference Server which serves multiple ML models trained and registered 
+# in OCI Data Science Catalog.
+#
+# Description: This server can be used to run inferences on multiple ML
+# models trained and registered in OCI Data Science Model Catalog. A single 
+# instance of this inference server can serve multiple ML models registered in 
+# model catalog. However, the ML models must have been trained in the same 
+# conda environment and have the same set of 3rd party libary dependencies 
+# (Python libraries).
+#
+# Author: Ganesh Radhakrishnan (ganrad01@gmail.com)
+# Dated: 01-26-2023
+#
+# Notes:
+#
+# ###
 
 from importlib.metadata import version
+import datetime
 import importlib.util
 import json
 import logging
@@ -37,8 +54,49 @@ from zipfile import ZipFile
 import oci
 import yaml
 
-# ### Constants
+# ### Constants ###
 SERVER_VERSION="0.0.1"
+DATE_FORMAT="%Y-%m-%d %I:%M:%S %p"
+
+# ### Global Vars ###
+reqs_success = 0 # No. of scoring requests completed successfully
+reqs_failures = 0 # No. of failures encountered by this server
+reqs_fail = 0 # No. of scoring requests which failed eg., due to incorrect data
+
+model_cache = [] # Model metadata cache. Stores loaded model artifact metadata.
+
+# ### Classes ###
+class ModelCache:
+  def __init__(self, name, ocid):
+      self.model_name = name
+      self.model_ocid = ocid
+      self.inf_calls = 0
+      self.last_reload_time = datetime.datetime.now().strftime(DATE_FORMAT)
+      self.no_of_reloads = 1
+
+  def __str__(self):
+      return {
+          "model_name": self.model_name,
+          "model_ocid": self.model_ocid,
+          "inf_calls": self.inf_calls,
+          "last_reload": self.last_reload_time,
+          "no_of_reloads": self.no_of_reloads
+      }
+
+# ### Module Functions ###
+def update_model_cache(name, id, **kwargs):
+    found = False
+    for meta in model_cache:
+        if meta.model_ocid == id:
+            found = True
+            if "loaded" in kwargs:
+                meta.last_reload_time = datetime.datetime.now().strftime(DATE_FORMAT)
+                meta.no_of_reloads += 1
+            if "inference" in kwargs:
+                meta.inf_calls += 1
+            break
+    if not found:
+        model_cache.append(ModelCache(name, id))
 
 # ### Configure logging ###
 loglevel = os.getenv('LOG_LEVEL', 'INFO') # one of DEBUG,INFO,WARNING,ERROR,CRITICAL
@@ -54,10 +112,6 @@ formatter = logging.Formatter('%(levelname)s: %(asctime)s - %(name)s - %(message
 ch.setFormatter(formatter)
 
 logger.addHandler(ch)
-
-# ### Global Vars
-reqs_success = 0
-reqs_fail = 0
 
 # ### Configure OCI client ###
 config = oci.config.from_file(os.environ['OCI_CONFIG_FILE_LOCATION'])
@@ -122,6 +176,7 @@ app = FastAPI(
 )
 
 # ### Model Server API ###
+
 """
   Returns current health status of model server
 """
@@ -139,7 +194,7 @@ async def health_check():
 @app.get("/serverinfo/", tags=["Model Server Info."], status_code=200)
 async def server_info():
     results = {
-         "Inf. Conda Environment": os.getenv("CONDA_HOME"),
+         "Conda Environment (Slug name)": os.getenv("CONDA_HOME"),
          "Python": sys.version,
          "Server Version": SERVER_VERSION,
          "Server Root": os.getcwd(),
@@ -148,15 +203,19 @@ async def server_info():
          "Listen Port": server_port,
          "Log Level": os.getenv("UVICORN_LOG_LEVEL"),
          # "Workers": os.getenv("UVICORN_WORKERS")
-         "Instance Info": {
+         "Server Info": {
            "Node Name": os.getenv("NODE_NAME"),
            "Namespace": os.getenv("POD_NAMESPACE"),
            "Instance Name": os.getenv("POD_NAME"),
            "Instance IP": os.getenv("POD_IP"),
-           "Service Account": os.getenv("POD_SVC_ACCOUNT"),
-           "Requests Succeeded": reqs_success,
-           "Requests Failed": reqs_fail
-         }
+           "Service Account": os.getenv("POD_SVC_ACCOUNT")
+         },
+         "Runtime Info": {
+           "Scored Requests": reqs_success,
+           "Failed Requests": reqs_fail,
+           "Server Failures": reqs_failures
+         },
+         "Model Info": model_cache
     }
     return results
 
@@ -169,17 +228,52 @@ async def server_info():
 """
 @app.get("/loadmodel/{model_id}", tags=["Load Model"], status_code=200)
 async def load_model(model_id):
-    st_time = time.time();
+    global reqs_failures
 
-    # Use DS API to fetch the model artifact
-    get_model_artifact_content_response = data_science_client.get_model_artifact_content(
-    model_id=model_id,
-    opc_request_id="mserver-001",
-    allow_control_chars=False)
+    # Retrieve model metadata from OCI DS
+    try:
+        get_model_response = data_science_client.get_model(model_id=model_id)
+    except Exception as e:
+        reqs_failures += 1
+        logger.error(f"Encountered exception: {e}")
+        err_detail = {
+            "err_message": "Internal server error",
+            "err_detail": str(e)
+        }
+        raise HTTPException(status_code=500, detail=err_detail)
+    
+    # Check if conda env matches model slug name if not raise an exception
+    model_obj = get_model_response.data
+    slug_name = None
+    for mdata in model_obj.custom_metadata_list:
+        if ( mdata.category == "Training Environment" and mdata.key == "SlugName" ):
+            slug_name = mdata.value
+            break
+    logger.debug(f"SlugName: {slug_name}")
+    if slug_name != os.getenv('CONDA_HOME'):
+        err_detail = {
+            "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
+            "err_detail": "Check the Slug name in the model taxonomy. The slug name should match the Conda environment of the multi model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
+        }
+        raise HTTPException(status_code=400, detail=err_detail)
+    model_name = model_obj.display_name
+
+    st_time = time.time();
+    try:
+        # Fetch the model artifacts
+        get_model_artifact_content_response = data_science_client.get_model_artifact_content(model_id=model_id, opc_request_id="mserver-001")
+    except Exception as e:
+        reqs_failures += 1
+        logger.error(f"Encountered exception: {e}")
+        err_detail = {
+            "err_message": "Internal server error",
+            "err_detail": str(e)
+        }
+        raise HTTPException(status_code=500, detail=err_detail)
 
     # Get the data from response
     logger.debug(f"Resource URL: {get_model_artifact_content_response.request.url}")
-    logger.info(f"Status: {get_model_artifact_content_response.status}")
+    logger.info(f"Fetch model artifacts status: {get_model_artifact_content_response.status}")
 
     logger.debug(f"Current working directory: {os.getcwd()}")
     artifact_file = model_id + ".zip"
@@ -193,10 +287,12 @@ async def load_model(model_id):
     zfile_path =  "./" + model_id
     if not os.path.isdir(zfile_path):
         os.makedirs(zfile_path)
+        update_model_cache(model_name,model_id)
         logger.debug("Created model artifact directory")
     else:
         shutil.rmtree(zfile_path)
         os.makedirs(zfile_path)
+        update_model_cache(model_name,model_id,loaded=True)
         logger.debug("Deleted model artifact directory & recreated it")
 
     # Unzip the model artifact file into the model id folder -
@@ -210,6 +306,7 @@ async def load_model(model_id):
 
     en_time = time.time() - st_time
     resp_msg = {
+        "model_name": model_name,
         "model_id": model_id,
         "operation": "load",
         "loadtime" : en_time,
@@ -232,7 +329,7 @@ async def get_model_metadata(model_id):
     # if not file_obj.is_file():
     if not os.path.isfile(file_path):
         model_status = await load_model(model_id)
-        logger.debug(f"Load model results: {model_status}")
+        logger.debug(f"Load model status: {model_status['status']}")
 
     metadata = ''
     with open(file_path, 'r') as f:
@@ -277,19 +374,21 @@ async def score(model_id: str, data: dict = Body()):
     # data = await request.json(); # returns body as dictionary
     # data = await request.body(); # returns body as string
     global reqs_success
+    global reqs_fail
 
     logger.debug(f"Inference Inp. Data: {data}")
     if not data:
+        reqs_fail += 1
         raise HTTPException(status_code=400, detail="Bad Request. No data sent in the request body!")
 
     file_path = './' + model_id + '/score.py'
     ld_time = 0
     # Load the model artifacts if model directory is not present
+    model_status = None
     if not os.path.isfile(file_path):
-        st_time = time.time()
         model_status = await load_model(model_id)
-        ld_time = time.time() - st_time
-        logger.debug(f"Load model results: {model_status}")
+        ld_time = model_status['loadtime']
+        logger.debug(f"Load model status: {model_status['status']}")
 
     module_name = 'score'
 
@@ -297,9 +396,18 @@ async def score(model_id: str, data: dict = Body()):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    st_time = time.time()
-    results = module.predict(data)
-    en_time = time.time() - st_time
+    try:
+        st_time = time.time()
+        results = module.predict(data)
+        en_time = time.time() - st_time
+    except Exception as e:
+        reqs_fail += 1
+        logger.error(f"Encountered exception: {e}")
+        err_detail = {
+            "err_message": "Bad Request. Malformed data sent in the request body!",
+            "err_detail": str(e)
+        }
+        raise HTTPException(status_code=422, detail=err_detail)
 
     results_data = dict()
     results_data["data"] = results
@@ -308,4 +416,6 @@ async def score(model_id: str, data: dict = Body()):
     logger.debug(f"Inference Out. Data: {results_data}")
 
     reqs_success += 1
+    update_model_cache(None,model_id,inference=True)
+
     return results_data
