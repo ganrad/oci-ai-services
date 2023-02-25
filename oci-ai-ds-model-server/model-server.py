@@ -55,8 +55,9 @@ import oci
 import yaml
 
 # ### Constants ###
-SERVER_VERSION="0.0.1"
+SERVER_VERSION="0.0.2"
 DATE_FORMAT="%Y-%m-%d %I:%M:%S %p"
+START_TIME=datetime.datetime.now().strftime(DATE_FORMAT)
 
 # ### Global Vars ###
 reqs_success = 0 # No. of scoring requests completed successfully
@@ -75,15 +76,12 @@ class ModelCache:
       self.no_of_reloads = 1
 
   def __str__(self):
-      return {
-          "model_name": self.model_name,
-          "model_ocid": self.model_ocid,
-          "inf_calls": self.inf_calls,
-          "last_reload": self.last_reload_time,
-          "no_of_reloads": self.no_of_reloads
-      }
+      return f"model_name: {self.model_name},model_ocid: {self.model_ocid},inf_calls: {self.inf_calls},last_reload: {self.last_reload_time},no_of_reloads: {self.no_of_reloads}"
 
 # ### Module Functions ###
+"""
+  Updates the server model cache
+"""
 def update_model_cache(name, id, **kwargs):
     found = False
     for meta in model_cache:
@@ -99,6 +97,7 @@ def update_model_cache(name, id, **kwargs):
         model_cache.append(ModelCache(name, id))
 
 # ### Configure logging ###
+# Default log level is INFO
 loglevel = os.getenv('LOG_LEVEL', 'INFO') # one of DEBUG,INFO,WARNING,ERROR,CRITICAL
 nloglevel = getattr(logging,loglevel.upper(),None)
 if not isinstance(nloglevel, int):
@@ -115,7 +114,7 @@ logger.addHandler(ch)
 
 # ### Configure OCI client ###
 config = oci.config.from_file(os.environ['OCI_CONFIG_FILE_LOCATION'])
-logger.info("Loaded OCI client config file")
+logger.info("Main(): Loaded OCI client config file")
 
 # Set the server port
 server_port=int(os.environ['UVICORN_PORT'])
@@ -124,7 +123,7 @@ server_port=int(os.environ['UVICORN_PORT'])
 data_science_client = oci.data_science.DataScienceClient(config)
 
 # ### Configure FastAPI Server
-from fastapi import Request, FastAPI, HTTPException, Body
+from fastapi import Request, FastAPI, HTTPException, Form, Body, Header, UploadFile
 
 api_description="""
 A REST API which allows users to load ML models and perform inferences on models
@@ -145,6 +144,10 @@ tags_metadata = [
         "description": "Load a ML model registered in OCI Data Science Catalog"
     },
     {
+        "name": "Upload Model",
+        "description": "Upload a ML model artifact (Zip file) to the inference server"
+    },
+    {
         "name": "Get Model Info.",
         "description": "Get an registered model's metadata"
     },
@@ -162,10 +165,10 @@ tags_metadata = [
 app = FastAPI(
     title="OCI Data Science Multi Model Inference Server",
     description=api_description,
-    version="0.0.1",
+    version=SERVER_VERSION,
     contact={
-        "name": "Ganesh Radhakrishnan",
-        "url": "https://github.com/ganrad",
+        "name": "Multi Model Inference Server",
+        "url": "https://github.com/ganrad/oci-ai-services/tree/main/oci-ai-ds-model-server",
         "email": "ganrad01@gmail.com"
     },
     license_info={
@@ -181,11 +184,13 @@ app = FastAPI(
   Returns current health status of model server
 """
 @app.get("/healthcheck/", tags=["Health Check"], status_code=200)
-async def health_check():
+async def health_check(probe_type: str | None = Header(default=None)):
     results = {
          "OCI Connectivity": "OK",
-         "HealthStatus": "OK"
+         "HealthStatus": "UP",
+         "Time": datetime.datetime.now().strftime(DATE_FORMAT)
     }
+    logger.debug(f"health_check(): {probe_type}")
     return results
 
 """
@@ -196,14 +201,15 @@ async def server_info():
     results = {
          "Conda Environment (Slug name)": os.getenv("CONDA_HOME"),
          "Python": sys.version,
-         "Server Version": SERVER_VERSION,
-         "Server Root": os.getcwd(),
          "Web Server": "Uvicorn {ws_version}".format(ws_version = version('uvicorn')),
          "Framework": "FastAPI {frm_version}".format(frm_version = version('fastapi')),
          "Listen Port": server_port,
          "Log Level": os.getenv("UVICORN_LOG_LEVEL"),
+         "Start time": START_TIME,
          # "Workers": os.getenv("UVICORN_WORKERS")
          "Server Info": {
+           "Version": SERVER_VERSION,
+           "Root": os.getcwd(),
            "Node Name": os.getenv("NODE_NAME"),
            "Namespace": os.getenv("POD_NAMESPACE"),
            "Instance Name": os.getenv("POD_NAME"),
@@ -235,7 +241,7 @@ async def load_model(model_id):
         get_model_response = data_science_client.get_model(model_id=model_id)
     except Exception as e:
         reqs_failures += 1
-        logger.error(f"Encountered exception: {e}")
+        logger.error(f"load_model(): Encountered exception: {e}")
         err_detail = {
             "err_message": "Internal server error",
             "err_detail": str(e)
@@ -249,22 +255,26 @@ async def load_model(model_id):
         if ( mdata.category == "Training Environment" and mdata.key == "SlugName" ):
             slug_name = mdata.value
             break
-    logger.debug(f"SlugName: {slug_name}")
+
+    # TODO: If slug_name is empty then check if custom conda env is present!!
+
+    logger.debug(f"load_model(): SlugName: {slug_name}")
     if slug_name != os.getenv('CONDA_HOME'):
         err_detail = {
             "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
             "err_detail": "Check the Slug name in the model taxonomy. The slug name should match the Conda environment of the multi model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
         }
+        # return 400: Bad Request
         raise HTTPException(status_code=400, detail=err_detail)
     model_name = model_obj.display_name
 
     st_time = time.time();
     try:
         # Fetch the model artifacts
-        get_model_artifact_content_response = data_science_client.get_model_artifact_content(model_id=model_id, opc_request_id="mserver-001")
+        get_model_artifact_content_response = data_science_client.get_model_artifact_content(model_id=model_id, opc_request_id=os.getenv("POD_NAME"))
     except Exception as e:
         reqs_failures += 1
-        logger.error(f"Encountered exception: {e}")
+        logger.error(f"load_model(): Encountered exception: {e}")
         err_detail = {
             "err_message": "Internal server error",
             "err_detail": str(e)
@@ -272,37 +282,37 @@ async def load_model(model_id):
         raise HTTPException(status_code=500, detail=err_detail)
 
     # Get the data from response
-    logger.debug(f"Resource URL: {get_model_artifact_content_response.request.url}")
-    logger.info(f"Fetch model artifacts status: {get_model_artifact_content_response.status}")
+    logger.debug(f"load_model(): Resource URL: {get_model_artifact_content_response.request.url}")
+    logger.info(f"load_model(): Fetch model artifacts status: {get_model_artifact_content_response.status}")
 
-    logger.debug(f"Current working directory: {os.getcwd()}")
+    logger.debug(f"load_model(): Current working directory: {os.getcwd()}")
     artifact_file = model_id + ".zip"
     # Save the downloaded model artifact zip file in current directory
     with open(artifact_file,'wb') as zfile:
         for chunk in get_model_artifact_content_response.data.raw.stream(1024 * 1024, decode_content=False):
             zfile.write(chunk)
-    logger.debug(f"Saved model artifact zip file: {artifact_file}")
+    logger.debug(f"load_model(): Saved model artifact zip file: {artifact_file}")
 
     # Check if model directory exists; if so delete and recreate it else create it
     zfile_path =  "./" + model_id
     if not os.path.isdir(zfile_path):
         os.makedirs(zfile_path)
         update_model_cache(model_name,model_id)
-        logger.debug("Created model artifact directory")
+        logger.debug("load_model(): Created model artifact directory")
     else:
         shutil.rmtree(zfile_path)
         os.makedirs(zfile_path)
         update_model_cache(model_name,model_id,loaded=True)
-        logger.debug("Deleted model artifact directory & recreated it")
+        logger.debug("load_model(): Deleted model artifact directory & recreated it")
 
     # Unzip the model artifact file into the model id folder -
     with ZipFile(artifact_file,'r') as zfile:
         zfile.extractall(zfile_path)
-    logger.debug(f"Extracted model artifacts from zip file into directory: {zfile_path}")
+    logger.debug(f"load_model(): Extracted model artifacts from zip file into directory: {zfile_path}")
 
     # Delete the artifact zip file
     os.remove(artifact_file)
-    logger.debug(f"Deleted model artifact zip file: {artifact_file}")
+    logger.debug(f"load_model(): Deleted model artifact zip file: {artifact_file}")
 
     en_time = time.time() - st_time
     resp_msg = {
@@ -323,13 +333,13 @@ async def load_model(model_id):
 @app.get("/getmodelinfo/{model_id}", tags=["Get Model Info."], status_code=200)
 async def get_model_metadata(model_id):
     file_path = os.getcwd() + '/' + model_id + '/runtime.yaml'
-    logger.debug(f"File Path={file_path}")
+    logger.debug(f"get_model_metadata(): File Path={file_path}")
     
     # Load the model artifacts if model runtime file is not present
     # if not file_obj.is_file():
     if not os.path.isfile(file_path):
         model_status = await load_model(model_id)
-        logger.debug(f"Load model status: {model_status['status']}")
+        logger.debug(f"get_model_metadata(): Load model status: {model_status['status']}")
 
     metadata = ''
     with open(file_path, 'r') as f:
@@ -356,7 +366,7 @@ async def list_models(compartment_id: str, project_id: str, no_of_models=400):
         limit=no_of_models)
 
     model_list = list_models_response.data
-    logger.debug(model_list)
+    logger.debug(f"list_models():\n{model_list}")
 
     return model_list
 
@@ -376,9 +386,10 @@ async def score(model_id: str, data: dict = Body()):
     global reqs_success
     global reqs_fail
 
-    logger.debug(f"Inference Inp. Data: {data}")
+    logger.debug(f"score(): Inference Inp. Data: {data}")
     if not data:
         reqs_fail += 1
+        # return 400: Bad Request
         raise HTTPException(status_code=400, detail="Bad Request. No data sent in the request body!")
 
     file_path = './' + model_id + '/score.py'
@@ -388,7 +399,7 @@ async def score(model_id: str, data: dict = Body()):
     if not os.path.isfile(file_path):
         model_status = await load_model(model_id)
         ld_time = model_status['loadtime']
-        logger.debug(f"Load model status: {model_status['status']}")
+        logger.debug(f"score(): Load model status: {model_status['status']}")
 
     module_name = 'score'
 
@@ -402,20 +413,71 @@ async def score(model_id: str, data: dict = Body()):
         en_time = time.time() - st_time
     except Exception as e:
         reqs_fail += 1
-        logger.error(f"Encountered exception: {e}")
+        logger.error(f"score(): Encountered exception: {e}")
         err_detail = {
             "err_message": "Bad Request. Malformed data sent in the request body!",
             "err_detail": str(e)
         }
+        # return 422: Unprocessable Entity
         raise HTTPException(status_code=422, detail=err_detail)
 
     results_data = dict()
     results_data["data"] = results
     results_data["load_time"] = ld_time
     results_data["inference_time"] = en_time
-    logger.debug(f"Inference Out. Data: {results_data}")
+    logger.debug(f"score(): Inference Out. Data: {results_data}")
 
     reqs_success += 1
     update_model_cache(None,model_id,inference=True)
 
     return results_data
+
+"""
+  Upload model artifacts to the inference server.  The server will cache it
+  as long as it is alive.
+
+  Parameters:
+  file: Zipped archive file containing model artifacts
+
+  Response body: A dict containing file upload status
+"""
+@app.post("/uploadmodel/", tags=["Upload Model"], status_code=200)
+async def upload_model(file: UploadFile, model_name: str = Form()):
+    artifact_file = file.filename
+    file_obj = file.file
+    logger.debug(f"upload_model(): Uploaded file: {artifact_file}")
+
+    if not artifact_file.endswith(".zip"):
+        err_detail = {
+            "err_message": "Bad Request. Only zipped model artifact files are accepted!",
+            "err_detail": "Unable to process the request"
+        }
+        # return 415: Unsupported media type
+        raise HTTPException(status_code=415, detail=err_detail)
+
+    # Create the model artifact directory
+    model_id = artifact_file[:artifact_file.index(".zip")]
+    zfile_path =  "./" + model_id
+    if not os.path.isdir(zfile_path):
+        os.makedirs(zfile_path)
+        update_model_cache(model_name,model_id)
+        logger.debug("upload_model(): Created model artifact directory")
+    else:
+        shutil.rmtree(zfile_path)
+        os.makedirs(zfile_path)
+        update_model_cache(model_name,model_id,loaded=True)
+        logger.debug("upload_model(): Deleted model artifact directory & recreated it")
+
+    # Unzip the model artifact file into the model id folder -
+    with ZipFile(file_obj,'r') as zfile:
+        zfile.extractall(zfile_path)
+    logger.debug(f"upload_model(): Extracted model artifacts from uploaded zip file into directory: {zfile_path}")
+
+    resp_dict = {
+        "modelName": model_name,
+        "fileName": file.filename,
+        "contentType": file.content_type,
+        "modelUploadStatus": "OK"
+    }
+
+    return resp_dict
