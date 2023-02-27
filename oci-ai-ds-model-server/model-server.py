@@ -489,7 +489,7 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
             "err_message": "Bad Request. Zip file contents are corrupted and/or unrecognizable!",
             "err_detail": "Unable to process the request"
         }
-        # return 422: Unsupported media type
+        # return 422: Unprocessable content
         raise HTTPException(status_code=422, detail=err_detail)
         
     resp_dict = {
