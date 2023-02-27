@@ -49,6 +49,7 @@ import os
 import shutil
 import sys
 import time
+from pathlib import Path
 from zipfile import ZipFile
 
 import oci
@@ -83,6 +84,10 @@ class ModelCache:
   Updates the server model cache
 """
 def update_model_cache(name, id, **kwargs):
+    if "delete" in kwargs:
+        model_cache[:] = [model for model in model_cache if not model.model_ocid == id]
+        return
+        
     found = False
     for meta in model_cache:
         if meta.model_ocid == id:
@@ -437,6 +442,8 @@ async def score(model_id: str, data: dict = Body()):
   as long as it is alive.
 
   Parameters:
+  model_name: Unique model name.  Caution: If name is not unique, then already 
+  cached model (if any) will be overwritten.
   file: Zipped archive file containing model artifacts
 
   Response body: A dict containing file upload status
@@ -445,7 +452,7 @@ async def score(model_id: str, data: dict = Body()):
 async def upload_model(file: UploadFile, model_name: str = Form()):
     artifact_file = file.filename
     file_obj = file.file
-    logger.debug(f"upload_model(): Uploaded file: {artifact_file}")
+    logger.info(f"upload_model(): File to upload: {artifact_file}")
 
     if not artifact_file.endswith(".zip"):
         err_detail = {
@@ -473,6 +480,18 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         zfile.extractall(zfile_path)
     logger.debug(f"upload_model(): Extracted model artifacts from uploaded zip file into directory: {zfile_path}")
 
+    # Check to see if the model directory contains a 'score.py' file
+    score_file = Path("{}/score.py".format(zfile_path))
+    if not score_file.is_file():
+        shutil.rmtree(zfile_path)
+        update_model_cache(model_name,model_id,delete=True)
+        err_detail = {
+            "err_message": "Bad Request. Zip file contents are corrupted and/or unrecognizable!",
+            "err_detail": "Unable to process the request"
+        }
+        # return 422: Unsupported media type
+        raise HTTPException(status_code=422, detail=err_detail)
+        
     resp_dict = {
         "modelName": model_name,
         "fileName": file.filename,
