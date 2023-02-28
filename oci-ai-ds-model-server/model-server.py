@@ -269,7 +269,7 @@ async def load_model(model_id):
             slug_name = mdata.value
             break
 
-    # TODO: If slug_name is empty then check if custom conda env is present!!
+    # NOTE: slug_name should not be empty. Should be set to the conda env name!!
 
     logger.debug(f"load_model(): SlugName: {slug_name}")
     if slug_name != os.getenv('CONDA_HOME'):
@@ -482,8 +482,9 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         # return 415: Unsupported media type
         raise HTTPException(status_code=415, detail=err_detail)
 
-    # Create the model artifact directory
     model_id = artifact_file[:artifact_file.index(".zip")]
+
+    # Create the model artifact directory
     zfile_path =  "./" + model_id
     if not os.path.isdir(zfile_path):
         os.makedirs(zfile_path)
@@ -514,6 +515,21 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         # return 422: Unprocessable content
         raise HTTPException(status_code=422, detail=err_detail)
         
+    # Read the 'runtime.yaml' and check the inference_env_slug value. It should
+    # match the conda env / runtime of this server.
+    with open(rtime_file, 'r') as f:
+        runtime_info = yaml.safe_load(f)
+    
+    slug_name = runtime_info['MODEL_DEPLOYMENT']['INFERENCE_CONDA_ENV']['INFERENCE_ENV_SLUG']
+    # print(f"SLUG NAME: {slug_name}")
+    if slug_name != os.getenv('CONDA_HOME'):
+        err_detail = {
+            "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
+            "err_detail": "The 'INFERENCE_ENV_SLUG' value in 'runtime.yaml' file does not match the Conda environment of the multi model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
+        }
+        # return 400: Bad Request
+        raise HTTPException(status_code=400, detail=err_detail)
+
     resp_dict = {
         "modelName": model_name,
         "fileName": file.filename,
