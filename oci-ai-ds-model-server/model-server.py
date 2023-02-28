@@ -523,6 +523,8 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
     slug_name = runtime_info['MODEL_DEPLOYMENT']['INFERENCE_CONDA_ENV']['INFERENCE_ENV_SLUG']
     # print(f"SLUG NAME: {slug_name}")
     if slug_name != os.getenv('CONDA_HOME'):
+        shutil.rmtree(zfile_path)
+        update_model_cache(model_name,model_id,delete=True)
         err_detail = {
             "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
             "err_detail": "The 'INFERENCE_ENV_SLUG' value in 'runtime.yaml' file does not match the Conda environment of the multi model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
@@ -532,6 +534,8 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
 
     resp_dict = {
         "modelName": model_name,
+        "modelOcid": model_id,
+        "slugName": slug_name,
         "fileName": file.filename,
         "contentType": file.content_type,
         "modelUploadStatus": "OK"
