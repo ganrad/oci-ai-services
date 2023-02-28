@@ -80,10 +80,10 @@ class ModelCache:
       return f"model_name: {self.model_name},model_ocid: {self.model_ocid},inf_calls: {self.inf_calls},last_reload: {self.last_reload_time},no_of_reloads: {self.no_of_reloads}"
 
 # ### Module Functions ###
-"""
-  Updates the server model cache
-"""
 def update_model_cache(name, id, **kwargs):
+    """
+      Updates the server model cache
+    """
     if "delete" in kwargs:
         model_cache[:] = [model for model in model_cache if not model.model_ocid == id]
         return
@@ -149,8 +149,12 @@ tags_metadata = [
         "description": "Load a ML model registered in OCI Data Science Catalog"
     },
     {
+        "name": "Remove Model",
+        "description": "Remove a ML model from Inference Server"
+    },
+    {
         "name": "Upload Model",
-        "description": "Upload a ML model artifact (Zip file) to the inference server"
+        "description": "Upload a ML model artifact (Zip file) to the Inference Server"
     },
     {
         "name": "Get Model Info.",
@@ -185,11 +189,12 @@ app = FastAPI(
 
 # ### Model Server API ###
 
-"""
-  Returns current health status of model server
-"""
 @app.get("/healthcheck/", tags=["Health Check"], status_code=200)
 async def health_check(probe_type: str | None = Header(default=None)):
+    """
+    Returns current health status of Multi Model Inference Server
+    """
+
     results = {
          "OCI Connectivity": "OK",
          "HealthStatus": "UP",
@@ -198,11 +203,12 @@ async def health_check(probe_type: str | None = Header(default=None)):
     logger.debug(f"health_check(): {probe_type}")
     return results
 
-"""
-  Returns model server info.
-"""
 @app.get("/serverinfo/", tags=["Model Server Info."], status_code=200)
 async def server_info():
+    """
+    Returns Inference Server info.
+    """
+
     results = {
          "Conda Environment (Slug name)": os.getenv("CONDA_HOME"),
          "Python": sys.version,
@@ -230,15 +236,17 @@ async def server_info():
     }
     return results
 
-"""
-  Loads the ML model artifacts from OCI Data Science.  Call this function to
-  pre-load the model into the cache.
-
-  Parameters:
-  model_id: OCI Data Science Model OCID
-"""
 @app.get("/loadmodel/{model_id}", tags=["Load Model"], status_code=200)
 async def load_model(model_id):
+    """
+    Loads the ML model artifacts from OCI Data Science.  Call this function to
+    pre-load the model into the Inference Server cache.
+
+    Parameters:
+
+    model_id: OCI Data Science Model OCID
+    """
+
     global reqs_failures
 
     # Retrieve model metadata from OCI DS
@@ -329,14 +337,16 @@ async def load_model(model_id):
 
     return resp_msg
 
-"""
-  Retrieves and returns the model metadata
-
-  Parameters:
-  model_id: OCI Data Science Model OCID
-"""
 @app.get("/getmodelinfo/{model_id}", tags=["Get Model Info."], status_code=200)
 async def get_model_metadata(model_id):
+    """
+    Retrieves and returns the model metadata
+
+    Parameters:
+
+    model_id: OCI Data Science Model OCID
+    """
+
     file_path = os.getcwd() + '/' + model_id + '/runtime.yaml'
     logger.debug(f"get_model_metadata(): File Path={file_path}")
     
@@ -352,17 +362,21 @@ async def get_model_metadata(model_id):
 
     return metadata
 
-"""
-  Retrieves the models for a given OCI compartment and DS project.
-
-  Parameters:
-  compartment_id: OCI Compartment ID
-  project_id: OCI Data Science Project OCID
-
-  Response body: A list containing model dictionaries - ocid's,name,state ...
-"""
 @app.get("/listmodels/", tags=["List Models"], status_code=200)
 async def list_models(compartment_id: str, project_id: str, no_of_models=400):
+    """
+    Retrieves the models for a given OCI Compartment and Data Science Project.
+
+    Parameters:
+
+    compartment_id: OCI Compartment ID
+    project_id: OCI Data Science Project OCID
+
+    Response:
+
+    A list containing model dictionaries - ocid's,name,state ...
+    """
+
     # Use DS API to fetch the model artifacts
     list_models_response = data_science_client.list_models(
         compartment_id=compartment_id,
@@ -375,16 +389,18 @@ async def list_models(compartment_id: str, project_id: str, no_of_models=400):
 
     return model_list
 
-"""
-  Scores the data points sent in the payload using the respective model.
-
-  Parameters:
-  model_id: OCI Data Science Model OCID
-  Request body: Data in the format expected by the model object
-"""
 @app.post("/score/", tags=["Predict Outcomes"], status_code=200)
 #async def score(model_id: str, request: Request): (also works!)
 async def score(model_id: str, data: dict = Body()):
+    """
+    Scores the data points sent in the payload using the respective model.
+
+    Parameters:
+
+    model_id: OCI Data Science Model OCID
+    data: Inference data in the format expected by the model object
+    """
+
     # Get predictions and explanations for each data point
     # data = await request.json(); # returns body as dictionary
     # data = await request.body(); # returns body as string
@@ -420,7 +436,7 @@ async def score(model_id: str, data: dict = Body()):
         reqs_fail += 1
         logger.error(f"score(): Encountered exception: {e}")
         err_detail = {
-            "err_message": "Bad Request. Malformed data sent in the request body!",
+            "err_message": "Malformed data sent in the request body!",
             "err_detail": str(e)
         }
         # return 422: Unprocessable Entity
@@ -437,26 +453,30 @@ async def score(model_id: str, data: dict = Body()):
 
     return results_data
 
-"""
-  Upload model artifacts to the inference server.  The server will cache it
-  as long as it is alive.
-
-  Parameters:
-  model_name: Unique model name.  Caution: If name is not unique, then already 
-  cached model (if any) will be overwritten.
-  file: Zipped archive file containing model artifacts
-
-  Response body: A dict containing file upload status
-"""
-@app.post("/uploadmodel/", tags=["Upload Model"], status_code=200)
+@app.post("/uploadmodel/", tags=["Upload Model"], status_code=201)
 async def upload_model(file: UploadFile, model_name: str = Form()):
+    """
+    Upload model artifacts to the inference server.  The server will cache it
+    as long as it is alive.
+
+    Parameters:
+
+    model_name: Unique model name.  Caution: If name is not unique, then 
+    already cached model (if any) will be overwritten.
+    file: Zipped archive file containing model artifacts
+
+    Response:
+
+    A dict containing file upload status
+    """
+
     artifact_file = file.filename
     file_obj = file.file
     logger.info(f"upload_model(): File to upload: {artifact_file}")
 
     if not artifact_file.endswith(".zip"):
         err_detail = {
-            "err_message": "Bad Request. Only zipped model artifact files are accepted!",
+            "err_message": "Only zipped model artifact files (.zip) are accepted!",
             "err_detail": "Unable to process the request"
         }
         # return 415: Unsupported media type
@@ -486,7 +506,7 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         shutil.rmtree(zfile_path)
         update_model_cache(model_name,model_id,delete=True)
         err_detail = {
-            "err_message": "Bad Request. Zip file contents are corrupted and/or unrecognizable!",
+            "err_message": "Zip file contents are corrupted and/or unrecognizable!",
             "err_detail": "Unable to process the request"
         }
         # return 422: Unprocessable content
@@ -500,3 +520,33 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
     }
 
     return resp_dict
+
+@app.delete("/removemodel/{model_id}", tags=["Remove Model"], status_code=200)
+async def remove_model(model_id):
+    """
+    Remove the ML model artifact from Inference Server.
+
+    Parameters:
+
+    model_id: OCI Data Science Model OCID
+    """
+
+    zfile_path =  "./" + model_id
+    if os.path.isdir(zfile_path):
+        shutil.rmtree(zfile_path)
+        update_model_cache("",model_id,delete=True)
+        logger.info(f"remove_model(): Deleted artifact directory for model ID:{model_id}")
+    else:
+        err_detail = {
+            "err_message": "Model artifact directory not found!",
+            "err_detail": "Unable to process the request"
+        }
+        # return 404: Not Found
+        raise HTTPException(status_code=404, detail=err_detail)
+        
+    resp_msg = {
+        "model_id": model_id,
+        "operation": "delete",
+        "status": "succeeded" }
+
+    return resp_msg
