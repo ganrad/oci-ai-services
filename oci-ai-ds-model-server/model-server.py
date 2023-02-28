@@ -500,9 +500,11 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         zfile.extractall(zfile_path)
     logger.debug(f"upload_model(): Extracted model artifacts from uploaded zip file into directory: {zfile_path}")
 
-    # Check to see if the model directory contains a 'score.py' file
+    # Check to see if the model directory contains a 'score.py' and 
+    # 'runtime.yaml' file
     score_file = Path("{}/score.py".format(zfile_path))
-    if not score_file.is_file():
+    rtime_file = Path("{}/runtime.yaml".format(zfile_path))
+    if not score_file.is_file() or not rtime_file.is_file():
         shutil.rmtree(zfile_path)
         update_model_cache(model_name,model_id,delete=True)
         err_detail = {
