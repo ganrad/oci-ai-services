@@ -22,23 +22,21 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# ###
-# An Inference Server which serves multiple ML models trained and registered 
-# in OCI Data Science Catalog.
-#
-# Description: This server can be used to run inferences on multiple ML
-# models trained and registered in OCI Data Science Model Catalog. A single 
-# instance of this inference server can serve multiple ML models registered in 
-# model catalog. However, the ML models must have been trained in the same 
-# conda environment and have the same set of 3rd party libary dependencies 
-# (Python libraries).
-#
-# Author: Ganesh Radhakrishnan (ganrad01@gmail.com)
-# Dated: 01-26-2023
-#
-# Notes:
-#
-# ###
+"""
+Module:
+    An Inference Server which serves multiple ML models trained and registered in OCI Data Science Catalog.
+
+Description:
+    This server can be used to run inferences on multiple ML models trained and registered in OCI Data Science Model Catalog. A single instance of this inference server can serve multiple ML models registered in model catalog. However, the ML models must have been trained in the same conda environment and have the same set of 3rd party libary dependencies (Python libraries).
+
+Author:
+    Ganesh Radhakrishnan (ganrad01@gmail.com)
+Dated:
+    01-26-2023
+
+Notes:
+
+"""
 
 from importlib.metadata import version
 import datetime
@@ -191,8 +189,17 @@ app = FastAPI(
 
 @app.get("/healthcheck/", tags=["Health Check"], status_code=200)
 async def health_check(probe_type: str | None = Header(default=None)):
-    """
-    Returns current health status of Multi Model Inference Server
+    """Run a health check on this server instance
+
+    HTTP Headers
+    ------------
+    probe-type : (str, optional)
+        Any string value eg., readiness, liveness ...
+
+    Returns
+    -------
+    dict: Current health status of Multi Model Inference Server
+
     """
 
     results = {
@@ -205,8 +212,12 @@ async def health_check(probe_type: str | None = Header(default=None)):
 
 @app.get("/serverinfo/", tags=["Model Server Info."], status_code=200)
 async def server_info():
-    """
-    Returns Inference Server info.
+    """Retrieve the server instance runtime info.
+
+    Returns
+    -------
+    dict: Inference Server info.
+
     """
 
     results = {
@@ -234,19 +245,27 @@ async def server_info():
          },
          "Model Info": model_cache
     }
+
     return results
 
 @app.get("/loadmodel/{model_id}", tags=["Load Model"], status_code=200)
 async def load_model(model_id):
+    """Loads the ML model artifacts from OCI Data Science.  Call this function to pre-load the model into the Inference Server cache.
+
+    Parameters
+    ----------
+    model_id : str
+        OCI Data Science Model OCID
+
+    Raises
+    ------
+    HTTPException: An exception is thrown when 1) Model's metadata cannot be retrieved 2) Model Slug name is NOT the same as this server instance's Conda env 3) Model's artifacts cannot be fetched from model catalog
+
+    Returns
+    -------
+    dict: Status upon loading the model
+
     """
-    Loads the ML model artifacts from OCI Data Science.  Call this function to
-    pre-load the model into the Inference Server cache.
-
-    Parameters:
-
-    model_id: OCI Data Science Model OCID
-    """
-
     global reqs_failures
 
     # Retrieve model metadata from OCI DS
@@ -339,12 +358,17 @@ async def load_model(model_id):
 
 @app.get("/getmodelinfo/{model_id}", tags=["Get Model Info."], status_code=200)
 async def get_model_metadata(model_id):
-    """
-    Retrieves and returns the model metadata
+    """Retrieves the model metadata
 
-    Parameters:
+    Parameters
+    ----------
+    model_id : str
+        OCI Data Science Model OCID
 
-    model_id: OCI Data Science Model OCID
+    Returns
+    -------
+    dict: Model artifact's runtime.yaml
+
     """
 
     file_path = os.getcwd() + '/' + model_id + '/runtime.yaml'
@@ -364,17 +388,20 @@ async def get_model_metadata(model_id):
 
 @app.get("/listmodels/", tags=["List Models"], status_code=200)
 async def list_models(compartment_id: str, project_id: str, no_of_models=400):
-    """
-    Retrieves the models for a given OCI Compartment and Data Science Project.
+    """Retrieves the models for a given OCI Compartment and Data Science Project.
 
-    Parameters:
+    Parameters
+    ----------
+    compartment_id : str
+        OCI Compartment ID
 
-    compartment_id: OCI Compartment ID
-    project_id: OCI Data Science Project OCID
+    project_id : str
+        OCI Data Science Project OCID
 
-    Response:
+    Returns
+    -------
+    dict: A list containing model dictionaries - ocid's,name,state ...
 
-    A list containing model dictionaries - ocid's,name,state ...
     """
 
     # Use DS API to fetch the model artifacts
@@ -392,13 +419,24 @@ async def list_models(compartment_id: str, project_id: str, no_of_models=400):
 @app.post("/score/", tags=["Predict Outcomes"], status_code=200)
 #async def score(model_id: str, request: Request): (also works!)
 async def score(model_id: str, data: dict = Body()):
-    """
-    Scores the data points sent in the payload using the respective model.
+    """Scores the data points sent in the payload using the respective model.
 
-    Parameters:
+    Parameters
+    ----------
+    model_id : str
+        OCI Data Science Model OCID
 
-    model_id: OCI Data Science Model OCID
-    data: Inference data in the format expected by the model object
+    data : dict
+        Inference data in the format expected by the model object
+
+    Raises
+    ------
+    HTTPException: Any exception encountered during inferencing is returned
+
+    Returns
+    -------
+    dict: A dictionary containing inference results
+
     """
 
     # Get predictions and explanations for each data point
@@ -455,19 +493,25 @@ async def score(model_id: str, data: dict = Body()):
 
 @app.post("/uploadmodel/", tags=["Upload Model"], status_code=201)
 async def upload_model(file: UploadFile, model_name: str = Form()):
-    """
-    Upload model artifacts to the inference server.  The server will cache it
+    """Upload model artifacts to the inference server.  The server will cache it
     as long as it is alive.
 
-    Parameters:
+    Parameters
+    ----------
+    model_name : str
+        Unique model name.  Caution: If name is not unique, then already cached model (if any) will be overwritten.
 
-    model_name: Unique model name.  Caution: If name is not unique, then 
-    already cached model (if any) will be overwritten.
-    file: Zipped archive file containing model artifacts
+    file : file object
+        Zipped archive file containing model artifacts
 
-    Response:
+    Raises
+    -------
+    HTTPException: An exception is thrown when 1) If uploaded file is not a zip file 2) If score.py or runtime.yaml is not present in the model artifact directory (after zip file is exploded) 3) If value of attribute 'inference_env_slug' in runtime.yaml is not the same as this server instance's conda env
 
-    A dict containing file upload status
+    Returns
+    -------
+    dict: A dict containing file upload status
+
     """
 
     artifact_file = file.filename
@@ -545,12 +589,21 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
 
 @app.delete("/removemodel/{model_id}", tags=["Remove Model"], status_code=200)
 async def remove_model(model_id):
-    """
-    Remove the ML model artifact from Inference Server.
+    """Removes the ML model artifacts from Inference Server.
 
-    Parameters:
+    Parameters
+    ----------
+    model_id : str
+        OCI Data Science Model OCID
 
-    model_id: OCI Data Science Model OCID
+    Raises
+    ------
+    HTTPException: An exception is thrown when the model artifact directory is not found
+
+    Returns
+    -------
+    dict: Status of delete operation
+
     """
 
     zfile_path =  "./" + model_id
