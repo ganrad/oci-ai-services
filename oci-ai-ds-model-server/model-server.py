@@ -99,9 +99,9 @@ def update_model_cache(name, id, **kwargs):
     if not found:
         model_cache.append(ModelCache(name, id))
 
-# ### Configure logging ###
-# Default log level is INFO
-loglevel = os.getenv('LOG_LEVEL', 'INFO') # one of DEBUG,INFO,WARNING,ERROR,CRITICAL
+# ### Configure logging for mmis ###
+# Default log level is INFO. Can be set and injected at container runtime.
+loglevel = os.getenv("LOG_LEVEL", default="INFO") # one of DEBUG,INFO,WARNING,ERROR,CRITICAL
 nloglevel = getattr(logging,loglevel.upper(),None)
 if not isinstance(nloglevel, int):
     raise ValueError('Invalid log level: %s' % loglevel)
@@ -116,14 +116,19 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 # ### Configure OCI client ###
-config = oci.config.from_file(os.environ['OCI_CONFIG_FILE_LOCATION'])
+# OCI Client API config profile.  Can be injected at container runtime.
+oci_cli_profile = os.getenv("OCI_CONFIG_PROFILE",default="DEFAULT")
+
+# NOTE: If OCI_CONFIG_FILE_LOCATION env var is not set in the container, an
+# exception will be thrown.  Server will not start!
+oci_config = oci.config.from_file(file_location=os.environ['OCI_CONFIG_FILE_LOCATION'], profile_name=oci_cli_profile)
 logger.info("Main(): Loaded OCI client config file")
 
-# Set the server port
-server_port=int(os.environ['UVICORN_PORT'])
+# Set the server port; Is optional, can be injected at container runtime.
+server_port=int(os.getenv("UVICORN_PORT",default="8000"))
 
 # Initialize data science service client with config file
-data_science_client = oci.data_science.DataScienceClient(config)
+data_science_client = oci.data_science.DataScienceClient(oci_config)
 
 # ### Configure FastAPI Server
 from fastapi import Request, FastAPI, HTTPException, Form, Body, Header, UploadFile
@@ -186,7 +191,6 @@ app = FastAPI(
 )
 
 # ### Model Server API ###
-
 @app.get("/healthcheck/", tags=["Health Check"], status_code=200)
 async def health_check(probe_type: str | None = Header(default=None)):
     """Run a health check on this server instance
@@ -221,29 +225,31 @@ async def server_info():
     """
 
     results = {
-         "Conda Environment (Slug name)": os.getenv("CONDA_HOME"),
-         "Python": sys.version,
-         "Web Server": "Uvicorn {ws_version}".format(ws_version = version('uvicorn')),
-         "Framework": "FastAPI {frm_version}".format(frm_version = version('fastapi')),
-         "Listen Port": server_port,
-         "Log Level": os.getenv("UVICORN_LOG_LEVEL"),
-         "Start time": START_TIME,
+         "conda_environment": os.getenv("CONDA_HOME"),
+         "python_version": sys.version,
+         "web_server": "Uvicorn {ws_version}".format(ws_version = version('uvicorn')),
+         "framework": "FastAPI {frm_version}".format(frm_version = version('fastapi')),
+         "listen_port": server_port,
+         "log_level": os.getenv("UVICORN_LOG_LEVEL"),
+         "start_time": START_TIME,
          # "Workers": os.getenv("UVICORN_WORKERS")
-         "Server Info": {
-           "Version": SERVER_VERSION,
-           "Root": os.getcwd(),
-           "Node Name": os.getenv("NODE_NAME"),
-           "Namespace": os.getenv("POD_NAMESPACE"),
-           "Instance Name": os.getenv("POD_NAME"),
-           "Instance IP": os.getenv("POD_IP"),
-           "Service Account": os.getenv("POD_SVC_ACCOUNT")
+         "oci_client_profile": oci_cli_profile,
+         "oci_client_info": oci_config,
+         "server_info": {
+           "version": SERVER_VERSION,
+           "root": os.getcwd(),
+           "node_name": os.getenv("NODE_NAME"),
+           "pod_namespace": os.getenv("POD_NAMESPACE"),
+           "pod_name": os.getenv("POD_NAME"),
+           "pod_ip": os.getenv("POD_IP"),
+           "service_account": os.getenv("POD_SVC_ACCOUNT")
          },
-         "Runtime Info": {
-           "Scored Requests": reqs_success,
-           "Failed Requests": reqs_fail,
-           "Server Failures": reqs_failures
+         "runtime_info": {
+           "scored_requests": reqs_success,
+           "failed_requests": reqs_fail,
+           "server_failures": reqs_failures
          },
-         "Model Info": model_cache
+         "model_info": model_cache
     }
 
     return results

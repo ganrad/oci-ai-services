@@ -56,32 +56,30 @@ ARG oci_pem_filepath
 # OCI Config file location
 ENV OCI_CONFIG_FILE_LOCATION=$oci_config_filepath
 
-# (Optional) Uvicorn Server listen port - Default 8000
-ENV UVICORN_PORT=8000
-
-# (Optional) FastAPI Uvicorn log level - Default info
+# FastAPI Uvicorn log level - Default info
 ENV UVICORN_LOG_LEVEL=info
 
-# (Optional) Uvicorn server concurrency
-# ENV UVICORN_CONCURRENCY=
+# (Optional) Uvicorn Server listen port - Default 8000
+ENV UVICORN_PORT=8000
 
 # Create the conda environment workdir = /envs
 WORKDIR /envs
 
-# Download the ML conda environment (tar file) using OCI Obj. Storage PAR URL
-RUN curl -X GET $condaurl --output $condaenv.tar
+# Download the ML conda environment (gzip tar file) using OCI Obj. Storage PAR 
+# URL
+RUN curl -X GET $condaurl --output $condaenv.tar.gz
 
 # Create the conda env directory
 RUN mkdir $condaenv 
 
 # Unpack the conda env tar file
-RUN tar -xvf $condaenv.tar --directory ./$condaenv
+RUN tar -xvzf $condaenv.tar.gz --directory ./$condaenv
 
 # List the contents of conda env directory
 RUN ls -lt ./$condaenv
 
 # Remove the downloaded conda env tar file
-RUN rm $condaenv.tar
+RUN rm $condaenv.tar.gz
 
 # Set conda home (env variable)
 ENV CONDA_HOME=$condaenv
