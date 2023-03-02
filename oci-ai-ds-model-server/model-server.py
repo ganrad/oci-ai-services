@@ -2,7 +2,7 @@
 # coding: utf-8
 # MIT License
 
-# Copyright (c) 2023 HZ-MS-CSA
+# Copyright (c) 2023 OCI-PM-CE
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -192,7 +192,8 @@ app = FastAPI(
 
 # ### Model Server API ###
 @app.get("/healthcheck/", tags=["Health Check"], status_code=200)
-async def health_check(probe_type: str | None = Header(default=None)):
+#async def health_check(probe_type: str | None = Header(default=None)): # Works > Py 3.10+
+async def health_check(probe_type: str = Header(default=None)): # =Py 3.8/3.9
     """Run a health check on this server instance
 
     HTTP Headers
@@ -207,9 +208,10 @@ async def health_check(probe_type: str | None = Header(default=None)):
     """
 
     results = {
-         "OCI Connectivity": "OK",
-         "HealthStatus": "UP",
-         "Time": datetime.datetime.now().strftime(DATE_FORMAT)
+         "oci_connectivity": "OK",
+         "health_status": "UP",
+         "probe_type": probe_type,
+         "time": datetime.datetime.now().strftime(DATE_FORMAT)
     }
     logger.debug(f"health_check(): {probe_type}")
     return results
@@ -583,12 +585,12 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         raise HTTPException(status_code=400, detail=err_detail)
 
     resp_dict = {
-        "modelName": model_name,
-        "modelOcid": model_id,
-        "slugName": slug_name,
-        "fileName": file.filename,
-        "contentType": file.content_type,
-        "modelUploadStatus": "OK"
+        "model_name": model_name,
+        "model_ocid": model_id,
+        "slug_name": slug_name,
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "model_upload_status": "OK"
     }
 
     return resp_dict
