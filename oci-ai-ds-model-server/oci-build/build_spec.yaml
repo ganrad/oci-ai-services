@@ -45,7 +45,7 @@ inputArtifacts:
     location: ${OCI_PRIMARY_SOURCE_DIR}/oci-ai-ds-model-server/config
   - name: oci-pem
     type: GENERIC_ARTIFACT
-    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiass246ypdke7f3g4tzekcitb36suucy6opii2aln432lq
+    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiafgx7btpd5os7gputlumsuxlnfa6e4ylcxk4hpz77bc4a
     location: ${OCI_PRIMARY_SOURCE_DIR}/oci-ai-ds-model-server/oci-api.pem
 
 steps:
