@@ -1,3 +1,4 @@
+# -------------------------------------------
 # Copyright (c) 2023 OCI-AI-CE
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -48,13 +49,29 @@ ARG condaenv
 
 # (Required) OCI CLI/SDK config & pem file paths have to passed in during 
 # container build time
-ARG oci_config_filepath
-ARG oci_pem_filepath
+ARG oci_config_filepath # Path to OCI Client Config file
+ARG oci_pem_filepath # Path to OCI Client PEM file
+
+# Container host type.  Can be Kubernetes, OKE, VM Instance ..
+ARG host_type=OKE 
+
+# (Optional) DevOps build info.
+ARG commit_hash=None #
+ARG pipeline_id=None #
+ARG build_id=None #
+
+# ### These env variables are included for info. only
+ENV DEVOPS_COMMIT_ID=$commit_hash
+ENV DEVOPS_PIPELINE_ID=$pipeline_id
+ENV DEVOPS_BUILD_ID=$build_id
 
 # ### Following env variables can be overriden by user at run time ###
 
 # OCI Config file location
 ENV OCI_CONFIG_FILE_LOCATION=$oci_config_filepath
+
+# Target runtime/platform
+ENV PLATFORM_NAME=$host_type
 
 # FastAPI Uvicorn log level - Default info
 ENV UVICORN_LOG_LEVEL=info

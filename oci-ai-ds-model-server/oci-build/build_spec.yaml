@@ -1,3 +1,6 @@
+# ---------------------------------------------------------------------------
+# Copyright (c) 2023 OCI-AI-CE
+#
 # Name: build_spec.yaml
 # Description: OCI DevOps build spec. file. This is a build spec is for 
 # containerizing the multi-model inference server.
@@ -17,6 +20,9 @@
 # is built.  The container image will be tagged with this name (~ version) in
 # OCI Container Registry.
 #
+# container_host: Name of service/platform where the mmis-server container will
+# be deployed. Supported values are Kubernetes, OKE, VM Instance.
+#
 # conda_env: Name of the Conda environment. This name should match the 
 # value of attribute 'INFERENCE_ENV_SLUG' in model artifact file -> runtime.yaml
 #
@@ -27,15 +33,15 @@
 #
 # oci-pem: Specify the Artifact OCID for the OCI Client API PEM file.
 #
-# -------------------------------------
-# Author: OCI AI Services Product Team
+# --------------------------------------------------
+# Author: OCI AI Services Customer Engineering Team
 # Dated: 02-05-2023
 #
 # Updates:
 #
 # ---------------------------------------------------------------------------
 
-version: 0.1             
+version: 0.1
 component: build
 timeoutInSeconds: 3600
 shell: bash           
@@ -65,6 +71,7 @@ steps:
       echo "Build Run ID: $OCI_BUILD_RUN_ID"
       echo "Source Directory: $OCI_PRIMARY_SOURCE_DIR"
       condaurl="${obj_store_uri}${conda_file_location}"
+      echo "Target Container run-time: ${container_host}"
       echo "Conda Env URL: $condaurl"
       echo "Conda Environment: ${conda_env}"
       echo "----- List directory contents ----"
@@ -77,7 +84,7 @@ steps:
       echo "Image tag name set to: ${tag_name}"
       echo "Starting the model server image build ..."
       # docker build -t oci-ds-model-server ./oci-ai-ds-model-server
-      docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" -t oci-ds-model-server ./oci-ai-ds-model-server
+      docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" --build-arg host_type=${container_host} --build-arg commit_hash=$OCI_PRIMARY_SOURCE_COMMIT_HASH --build-arg pipeline_id=$OCI_PIPELINE_ID --build-arg build_id=$OCI_BUILD_RUN_ID -t oci-ds-model-server ./oci-ai-ds-model-server
       echo "Image build completed OK"
    
 outputArtifacts:

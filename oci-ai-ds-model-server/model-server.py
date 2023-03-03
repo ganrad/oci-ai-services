@@ -226,6 +226,12 @@ async def server_info():
 
     """
 
+    host_type = os.getenv("PLATFORM_NAME")
+    if not host_type and (host_type == 'Kubernetes' or host_type == 'OKE'):
+        scale_type = "Auto"
+    else:
+        scale_type = "Manual"
+
     results = {
          "conda_environment": os.getenv("CONDA_HOME"),
          "python_version": sys.version,
@@ -234,7 +240,15 @@ async def server_info():
          "listen_port": server_port,
          "log_level": os.getenv("UVICORN_LOG_LEVEL"),
          "start_time": START_TIME,
-         # "Workers": os.getenv("UVICORN_WORKERS")
+         "platform": {
+           "host_type": os.getenv("PLATFORM_NAME"),
+           "scaling": scale_type
+         },
+         "build_info": {
+           "commit_hash": os.getenv("DEVOPS_COMMIT_ID"),
+           "pipeline_ocid": os.getenv("DEVOPS_PIPELINE_ID"),
+           "build_run_ocid": os.getenv("DEVOPS_BUILD_ID")
+         },
          "oci_client_info": {
            "profile": oci_cli_profile,
            "log_requests": oci_config.get('log_requests'),
@@ -297,7 +311,7 @@ async def load_model(model_id):
     model_name = model_obj.display_name
 
     # Check to see if the model's lifecycle state is 'Active'
-    if model_obj.lifecycle_state != Model.LIFECYCLE_STATE_ACTIVE:
+    if model_obj.lifecycle_state != oci.data_science.models.Model.LIFECYCLE_STATE_ACTIVE:
         err_detail = {
             "err_message": f"Bad Request. Model : [{model_name}:{model_id}] is not in Active state",
             "err_detail": "Reactivate the model and then try loading it"
@@ -416,23 +430,40 @@ async def list_models(compartment_id: str, project_id: str, no_of_models=400):
     Parameters
     ----------
     compartment_id : str
-        OCI Compartment ID
+        OCI Compartment OCID
 
     project_id : str
         OCI Data Science Project OCID
+
+    Raises
+    ------
+    HTTPException: Any exception encountered while fetching the models is returned
 
     Returns
     -------
     dict: A list containing model dictionaries - ocid's,name,state ...
 
     """
+    global reqs_failures
 
-    # Use DS API to fetch the model artifacts
-    list_models_response = data_science_client.list_models(
-        compartment_id=compartment_id,
-        project_id=project_id,
-        lifecycle_state=oci.data_science.models.Model.LIFECYCLE_STATE_ACTIVE,
-        limit=no_of_models)
+    logger.info(f"list_models(): Compartment ocid=[{compartment_id}, Project ocid=[{project_id}]")
+
+    try:
+        # Use DS API to fetch 'Active' model artifacts
+        list_models_response = data_science_client.list_models(
+            compartment_id=compartment_id,
+            project_id=project_id,
+            lifecycle_state=oci.data_science.models.Model.LIFECYCLE_STATE_ACTIVE,
+            limit=no_of_models)
+    except Exception as e:
+        reqs_failures += 1
+        logger.error(f"load_model(): Encountered exception: {e}")
+        err_detail = {
+            "err_message": "Internal server error",
+            "err_detail": str(e)
+        }
+        # return 500: Internal Server Error
+        raise HTTPException(status_code=500, detail=err_detail)
 
     model_list = list_models_response.data
     logger.debug(f"list_models():\n{model_list}")
