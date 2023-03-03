@@ -213,7 +213,7 @@ async def health_check(probe_type: str = Header(default=None)): # =Py 3.8/3.9
          "probe_type": probe_type,
          "time": datetime.datetime.now().strftime(DATE_FORMAT)
     }
-    logger.debug(f"health_check(): {probe_type}")
+    logger.info(f"health_check(): Probe={probe_type}")
     return results
 
 @app.get("/serverinfo/", tags=["Model Server Info."], status_code=200)
@@ -227,7 +227,8 @@ async def server_info():
     """
 
     host_type = os.getenv("PLATFORM_NAME")
-    if not host_type and (host_type == 'Kubernetes' or host_type == 'OKE'):
+    logger.debug(f"server_info(): Host type={host_type}")
+    if host_type and (host_type == 'Kubernetes' or host_type == 'OKE'):
         scale_type = "Auto"
     else:
         scale_type = "Manual"
