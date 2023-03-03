@@ -272,7 +272,7 @@ async def load_model(model_id):
 
     Raises
     ------
-    HTTPException: An exception is thrown when 1) Model's metadata cannot be retrieved 2) Model Slug name is NOT the same as this server instance's Conda env 3) Model's artifacts cannot be fetched from model catalog
+    HTTPException: An exception is thrown when 1) Model's metadata cannot be retrieved 2) Model is in in-active state 3) Model Slug name is NOT the same as this server instance's Conda env 3) Model's artifacts cannot be fetched from model catalog
 
     Returns
     -------
