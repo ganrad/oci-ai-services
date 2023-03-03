@@ -2,7 +2,7 @@
 # coding: utf-8
 # MIT License
 
-# Copyright (c) 2023 OCI-PM-CE
+# Copyright (c) 2023 OCI-AI-CE
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -235,8 +235,13 @@ async def server_info():
          "log_level": os.getenv("UVICORN_LOG_LEVEL"),
          "start_time": START_TIME,
          # "Workers": os.getenv("UVICORN_WORKERS")
-         "oci_client_profile": oci_cli_profile,
-         "oci_client_info": oci_config,
+         "oci_client_info": {
+           "profile": oci_cli_profile,
+           "log_requests": oci_config.get('log_requests'),
+           "tenancy": oci_config.get('tenancy'),
+           "region": oci_config.get('region'),
+           "key_file": oci_config.get('key_file')
+         },
          "server_info": {
            "version": SERVER_VERSION,
            "root": os.getcwd(),
