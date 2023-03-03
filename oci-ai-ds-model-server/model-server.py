@@ -293,8 +293,19 @@ async def load_model(model_id):
         }
         raise HTTPException(status_code=500, detail=err_detail)
     
-    # Check if conda env matches model slug name if not raise an exception
     model_obj = get_model_response.data
+    model_name = model_obj.display_name
+
+    # Check to see if the model's lifecycle state is 'Active'
+    if model_obj.lifecycle_state != Model.LIFECYCLE_STATE_ACTIVE:
+        err_detail = {
+            "err_message": f"Bad Request. Model : [{model_name}:{model_id}] is not in Active state",
+            "err_detail": "Reactivate the model and then try loading it"
+        }
+        # return 400: Bad Request
+        raise HTTPException(status_code=400, detail=err_detail)
+
+    # Check if conda env matches model slug name if not raise an exception
     slug_name = None
     for mdata in model_obj.custom_metadata_list:
         if ( mdata.category == "Training Environment" and mdata.key == "SlugName" ):
@@ -311,7 +322,6 @@ async def load_model(model_id):
         }
         # return 400: Bad Request
         raise HTTPException(status_code=400, detail=err_detail)
-    model_name = model_obj.display_name
 
     st_time = time.time();
     try:
