@@ -175,11 +175,11 @@ tags_metadata = [
 
 # Initialize the FastAPI Uvicorn Server
 app = FastAPI(
-    title="OCI Data Science Multi Model Inference Server",
+    title=f"Multi Model Inference Server (Conda-Env={os.getenv('CONDA_HOME')})",
     description=api_description,
     version=SERVER_VERSION,
     contact={
-        "name": "Multi Model Inference Server",
+        "name": "OCI AI Services Customer Engineering",
         "url": "https://github.com/ganrad/oci-ai-services/tree/main/oci-ai-ds-model-server",
         "email": "ganrad01@gmail.com"
     },
