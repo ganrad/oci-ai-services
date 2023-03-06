@@ -6,7 +6,11 @@
 # containerizing the multi-model inference server.
 #
 # IMPORTANT NOTES:
-# Prior to running the build pipeline, make sure to define the following
+# A. First, create and update the 'inputArtifact' ID's (OCID's) for artifacts - 
+# - oci-config (OCI CLI config file)
+# - oci-pem (OCI CLI API PEM file)
+#
+# B. Prior to running the build pipeline, make sure to define the following
 # pipeline Parameters.
 #
 # obj_store_uri: The PAR URI for OCI Object Store Bucket. Should be of the form
@@ -20,7 +24,7 @@
 # is built.  The container image will be tagged with this name (~ version) in
 # OCI Container Registry.
 #
-# container_host: Name of service/platform where the mmis-server container will
+# container_host: Type of service/platform where the mmis-server container will
 # be deployed. Supported values are Kubernetes, OKE, VM Instance.
 #
 # conda_env: Name of the Conda environment. This name should match the 
@@ -55,11 +59,11 @@ env:
 inputArtifacts:
   - name: oci-config
     type: GENERIC_ARTIFACT
-    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiabjkkugpcapjf7euyk3kzecz55pf7lxlfzqgkptr4b2tq
+    artifactId: <oci-cli-config-file>
     location: ${OCI_PRIMARY_SOURCE_DIR}/oci-ai-ds-model-server/config
   - name: oci-pem
     type: GENERIC_ARTIFACT
-    artifactId: ocid1.genericartifact.oc1.iad.0.amaaaaaanif7xwiafgx7btpd5os7gputlumsuxlnfa6e4ylcxk4hpz77bc4a
+    artifactId: <oci-cli-pem-file>
     location: ${OCI_PRIMARY_SOURCE_DIR}/oci-ai-ds-model-server/oci-api.pem
 
 steps:
