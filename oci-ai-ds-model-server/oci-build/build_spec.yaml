@@ -6,9 +6,13 @@
 # containerizing the multi-model inference server.
 #
 # IMPORTANT NOTES:
-# A. First, create and update the 'inputArtifact' ID's (OCID's) for artifacts - 
-# - oci-config (OCI CLI config file)
-# - oci-pem (OCI CLI API PEM file)
+# A. Update the following input artifacts with the correct 'Artifact' ID's
+# (~ OCID's)
+#
+# oci-config: Specify the Artifact OCID which points to the OCI Client API 
+# config file.
+#
+# oci-pem: Specify the Artifact OCID for the OCI Client API PEM file.
 #
 # B. Prior to running the build pipeline, make sure to define the following
 # pipeline Parameters.
@@ -29,13 +33,6 @@
 #
 # conda_env: Name of the Conda environment. This name should match the 
 # value of attribute 'INFERENCE_ENV_SLUG' in model artifact file -> runtime.yaml
-#
-# Next, update the following input artifacts with the correct 'Artifact' ID's
-#
-# oci-config: Specify the Artifact OCID which points to the OCI Client API 
-# config file.
-#
-# oci-pem: Specify the Artifact OCID for the OCI Client API PEM file.
 #
 # --------------------------------------------------
 # Author: OCI AI Services Customer Engineering Team
