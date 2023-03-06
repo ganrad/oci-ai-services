@@ -27,7 +27,7 @@ Module:
     An Inference Server which serves multiple ML models trained and registered in OCI Data Science Catalog.
 
 Description:
-    This server can be used to run inferences on multiple ML models trained and registered in OCI Data Science Model Catalog. A single instance of this inference server can serve multiple ML models registered in model catalog. However, the ML models must have been trained in the same conda environment and have the same set of 3rd party libary dependencies (Python libraries).
+    This server can be used to run inferences on multiple ML models trained and registered in OCI Data Science Model Catalog. A single instance of this inference server can serve multiple ML models registered in model catalog. However, the ML models must have been trained in the same conda environment requiring Python library dependencies contained within this environment.
 
 Author:
     Ganesh Radhakrishnan (ganrad01@gmail.com)
