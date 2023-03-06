@@ -2,7 +2,7 @@
 # Copyright (c) 2023 OCI-AI-CE
 #
 # Name: build_spec.yaml
-# Description: OCI DevOps build spec. file. This is a build spec is for 
+# Description: OCI DevOps build spec. file. This is a build spec file for 
 # containerizing the multi-model inference server.
 #
 # IMPORTANT NOTES:
