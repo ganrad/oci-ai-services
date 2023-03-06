@@ -133,49 +133,57 @@ data_science_client = oci.data_science.DataScienceClient(oci_config)
 # ### Configure FastAPI Server
 from fastapi import Request, FastAPI, HTTPException, Form, Body, Header, UploadFile
 
-api_description="""
+api_description=f"""
+### Description
 A REST API which allows users to load ML models and perform inferences on models
 trained in OCI Data Science Platform.
+
+### Environment
+**Server Version:** {SERVER_VERSION}
+
+**Conda Env./Slug Name:** {os.getenv('CONDA_HOME')}
+
+### Notes
 """
 
 tags_metadata = [
     {
-        "name": "Health Check",
-        "description": "Liveness probe - Check if the API is up and runnning (alive)"
+        "name": "Load Model",
+        "description": "**Load** a ML model registered in OCI Data Science Catalog into Inference Server"
+    },
+    {
+        "name": "Remove Model",
+        "description": "**Remove** a ML model from Inference Server"
+    },
+    {
+        "name": "Upload Model",
+        "description": "**Upload** a ML model artifact (Zip file) to the Inference Server"
+    },
+    {
+        "name": "Get Model Info.",
+        "description": "**Get** a registered model's metadata"
+    },
+    {
+        "name": "List Models",
+        "description": "**List** model artifacts registered in a OCI Data Science Model Catalog"
+    },
+    {
+        "name": "Predict Outcomes",
+        "description": "Use inference data to run **predictions** against a trained ML model"
     },
     {
         "name": "Model Server Info.",
         "description": "Get model server information"
     },
     {
-        "name": "Load Model",
-        "description": "Load a ML model registered in OCI Data Science Catalog"
-    },
-    {
-        "name": "Remove Model",
-        "description": "Remove a ML model from Inference Server"
-    },
-    {
-        "name": "Upload Model",
-        "description": "Upload a ML model artifact (Zip file) to the Inference Server"
-    },
-    {
-        "name": "Get Model Info.",
-        "description": "Get an registered model's metadata"
-    },
-    {
-        "name": "List Models",
-        "description": "List model artifacts registered in a OCI Data Science Model Catalog"
-    },
-    {
-        "name": "Predict Outcomes",
-        "description": "Use live inference data to run predictions against a trained ML model"
+        "name": "Health Check",
+        "description": "Liveness probe - Check if the API is up and runnning (alive)"
     }
 ]
 
 # Initialize the FastAPI Uvicorn Server
 app = FastAPI(
-    title=f"Multi Model Inference Server (Conda-Env={os.getenv('CONDA_HOME')})",
+    title="OCI Data Science Multi Model Inference Server",
     description=api_description,
     version=SERVER_VERSION,
     contact={
