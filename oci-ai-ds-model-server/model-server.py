@@ -246,17 +246,19 @@ async def server_info():
          "python_version": sys.version,
          "web_server": "Uvicorn {ws_version}".format(ws_version = version('uvicorn')),
          "framework": "FastAPI {frm_version}".format(frm_version = version('fastapi')),
-         "listen_port": server_port,
-         "log_level": os.getenv("UVICORN_LOG_LEVEL"),
          "start_time": START_TIME,
          "platform": {
-           "host_type": os.getenv("PLATFORM_NAME"),
+           "type": os.getenv("PLATFORM_NAME"),
            "scaling": scale_type
          },
          "build_info": {
            "commit_hash": os.getenv("DEVOPS_COMMIT_ID"),
            "pipeline_ocid": os.getenv("DEVOPS_PIPELINE_ID"),
            "build_run_ocid": os.getenv("DEVOPS_BUILD_ID")
+         },
+         "deployment_info": {
+           "pipeline_ocid": os.getenv("DEPLOYMENT_PIPELINE_OCID"),
+           "deployment_ocid": os.getenv("DEPLOYMENT_OCID")
          },
          "oci_client_info": {
            "profile": oci_cli_profile,
@@ -268,11 +270,14 @@ async def server_info():
          "server_info": {
            "version": SERVER_VERSION,
            "root": os.getcwd(),
+           "image_id": os.getenv("IMAGE_ID"),
            "node_name": os.getenv("NODE_NAME"),
            "pod_namespace": os.getenv("POD_NAMESPACE"),
            "pod_name": os.getenv("POD_NAME"),
            "pod_ip": os.getenv("POD_IP"),
-           "service_account": os.getenv("POD_SVC_ACCOUNT")
+           "port": server_port,
+           "service_account": os.getenv("POD_SVC_ACCOUNT"),
+           "log_level": os.getenv("UVICORN_LOG_LEVEL")
          },
          "runtime_info": {
            "scored_requests": reqs_success,
