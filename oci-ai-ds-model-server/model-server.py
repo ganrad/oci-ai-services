@@ -152,10 +152,6 @@ tags_metadata = [
         "description": "**Load** a ML model registered in OCI Data Science Catalog into Inference Server"
     },
     {
-        "name": "Remove Model",
-        "description": "**Remove** a ML model from Inference Server"
-    },
-    {
         "name": "Upload Model",
         "description": "**Upload** a ML model artifact (Zip file) to the Inference Server"
     },
@@ -170,6 +166,10 @@ tags_metadata = [
     {
         "name": "Predict Outcomes",
         "description": "Use inference data to run **predictions** against a trained ML model"
+    },
+    {
+        "name": "Remove Model",
+        "description": "**Remove** a ML model from Inference Server"
     },
     {
         "name": "Model Server Info.",
@@ -258,7 +258,7 @@ async def server_info():
          },
          "deployment_info": {
            "pipeline_ocid": os.getenv("DEPLOYMENT_PIPELINE_OCID"),
-           "deployment_ocid": os.getenv("DEPLOYMENT_OCID")
+           "deployment_name": os.getenv("DEPLOYMENT_OCID")
          },
          "oci_client_info": {
            "profile": oci_cli_profile,
