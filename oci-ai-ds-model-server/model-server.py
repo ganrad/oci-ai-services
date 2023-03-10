@@ -54,7 +54,8 @@ import oci
 import yaml
 
 # ### Constants ###
-SERVER_VERSION="0.0.2"
+API_VERSION="v1" # API Version
+SERVER_VERSION="1.0.4" # Internal API version!
 DATE_FORMAT="%Y-%m-%d %I:%M:%S %p"
 START_TIME=datetime.datetime.now().strftime(DATE_FORMAT)
 
@@ -62,6 +63,8 @@ START_TIME=datetime.datetime.now().strftime(DATE_FORMAT)
 reqs_success = 0 # No. of scoring requests completed successfully
 reqs_failures = 0 # No. of failures encountered by this server
 reqs_fail = 0 # No. of scoring requests which failed eg., due to incorrect data
+api_endpoint = "/api/" + API_VERSION # API Endpoint/Route
+context_path = '/' + os.getenv('TARGET_ENV') + "/" + os.getenv('CONDA_HOME')
 
 model_cache = [] # Model metadata cache. Stores loaded model artifact metadata.
 
@@ -143,6 +146,8 @@ trained in OCI Data Science Platform.
 
 **Conda Env./Slug Name:** {os.getenv('CONDA_HOME')}
 
+**API Endpoint:** {api_endpoint}{context_path}/
+
 ### Notes
 """
 
@@ -199,7 +204,7 @@ app = FastAPI(
 )
 
 # ### Model Server API ###
-@app.get("/healthcheck/", tags=["Health Check"], status_code=200)
+@app.get(api_endpoint + context_path + "/healthcheck/", tags=["Health Check"], status_code=200)
 #async def health_check(probe_type: str | None = Header(default=None)): # Works > Py 3.10+
 async def health_check(probe_type: str = Header(default=None)): # =Py 3.8/3.9
     """Run a health check on this server instance
@@ -224,7 +229,7 @@ async def health_check(probe_type: str = Header(default=None)): # =Py 3.8/3.9
     logger.info(f"health_check(): Probe={probe_type}")
     return results
 
-@app.get("/serverinfo/", tags=["Model Server Info."], status_code=200)
+@app.get(api_endpoint + context_path + "/serverinfo/", tags=["Model Server Info."], status_code=200)
 async def server_info():
     """Retrieve the server instance runtime info.
 
@@ -269,6 +274,7 @@ async def server_info():
          },
          "server_info": {
            "version": SERVER_VERSION,
+           "endpoint": api_endpoint + context_path,
            "root": os.getcwd(),
            "image_id": os.getenv("IMAGE_ID"),
            "node_name": os.getenv("NODE_NAME"),
@@ -289,7 +295,7 @@ async def server_info():
 
     return results
 
-@app.get("/loadmodel/{model_id}", tags=["Load Model"], status_code=200)
+@app.get(api_endpoint + context_path + "/loadmodel/{model_id}", tags=["Load Model"], status_code=200)
 async def load_model(model_id):
     """Loads the ML model artifacts from OCI Data Science.  Call this function to pre-load the model into the Inference Server cache.
 
@@ -407,7 +413,7 @@ async def load_model(model_id):
 
     return resp_msg
 
-@app.get("/getmodelinfo/{model_id}", tags=["Get Model Info."], status_code=200)
+@app.get(api_endpoint + context_path + "/getmodelinfo/{model_id}", tags=["Get Model Info."], status_code=200)
 async def get_model_metadata(model_id):
     """Retrieves the model metadata
 
@@ -437,7 +443,7 @@ async def get_model_metadata(model_id):
 
     return metadata
 
-@app.get("/listmodels/", tags=["List Models"], status_code=200)
+@app.get(api_endpoint + context_path + "/listmodels/", tags=["List Models"], status_code=200)
 async def list_models(compartment_id: str, project_id: str, no_of_models=400):
     """Retrieves the models for a given OCI Compartment and Data Science Project.
 
@@ -484,7 +490,7 @@ async def list_models(compartment_id: str, project_id: str, no_of_models=400):
 
     return model_list
 
-@app.post("/score/", tags=["Predict Outcomes"], status_code=200)
+@app.post(api_endpoint + context_path + "/score/", tags=["Predict Outcomes"], status_code=200)
 #async def score(model_id: str, request: Request): (also works!)
 async def score(model_id: str, data: dict = Body()):
     """Scores the data points sent in the payload using the respective model.
@@ -559,7 +565,7 @@ async def score(model_id: str, data: dict = Body()):
 
     return results_data
 
-@app.post("/uploadmodel/", tags=["Upload Model"], status_code=201)
+@app.post(api_endpoint + context_path + "/uploadmodel/", tags=["Upload Model"], status_code=201)
 async def upload_model(file: UploadFile, model_name: str = Form()):
     """Upload model artifacts to the inference server.  The server will cache it
     as long as it is alive.
@@ -655,7 +661,7 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
 
     return resp_dict
 
-@app.delete("/removemodel/{model_id}", tags=["Remove Model"], status_code=200)
+@app.delete(api_endpoint + context_path + "/removemodel/{model_id}", tags=["Remove Model"], status_code=200)
 async def remove_model(model_id):
     """Removes the ML model artifacts from Inference Server.
 
