@@ -200,6 +200,9 @@ app = FastAPI(
         "name": "The MIT License",
         "url": "https://opensource.org/licenses/MIT"
     },
+    openapi_url=api_endpoint + context_path + "/openapi.json",
+    docs_url=api_endpoint + context_path + "/docs",
+    redoc_url=None,
     openapi_tags=tags_metadata
 )
 
