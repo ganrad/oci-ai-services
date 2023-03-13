@@ -54,7 +54,7 @@ import oci
 import yaml
 
 # ### Constants ###
-API_VERSION="v1" # API Version
+API_VERSION="v1" # Published API Version
 SERVER_VERSION="1.0.4" # Internal API version!
 DATE_FORMAT="%Y-%m-%d %I:%M:%S %p"
 START_TIME=datetime.datetime.now().strftime(DATE_FORMAT)
@@ -138,11 +138,13 @@ from fastapi import Request, FastAPI, HTTPException, Form, Body, Header, UploadF
 
 api_description=f"""
 ### Description
-A REST API which allows users to load ML models and perform inferences on models
-trained in OCI Data Science Platform.
+A scalable server which exposes a generic Web/REST API endpoint to load machine learning (ML) models trained in OCI Data Science and perform inferences.
 
-### Environment
+### Configuration
+
 **Server Version:** {SERVER_VERSION}
+
+**Environment:** {os.getenv('TARGET_ENV')}
 
 **Conda Env./Slug Name:** {os.getenv('CONDA_HOME')}
 
@@ -188,7 +190,7 @@ tags_metadata = [
 
 # Initialize the FastAPI Uvicorn Server
 app = FastAPI(
-    title="OCI Data Science Multi Model Inference Server",
+    title="A Multi Model Inference Server for OCI Data Science",
     description=api_description,
     version=SERVER_VERSION,
     contact={
@@ -257,7 +259,8 @@ async def server_info():
          "start_time": START_TIME,
          "platform": {
            "type": os.getenv("PLATFORM_NAME"),
-           "scaling": scale_type
+           "scaling": scale_type,
+           "environment": os.getenv("TARGET_ENV")
          },
          "build_info": {
            "commit_hash": os.getenv("DEVOPS_COMMIT_ID"),
