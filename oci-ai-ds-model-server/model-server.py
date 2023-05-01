@@ -190,7 +190,7 @@ tags_metadata = [
 
 # Initialize the FastAPI Uvicorn Server
 app = FastAPI(
-    title="A Multi Model Inference Server for OCI Data Science",
+    title="A scalable Model Inference Server for OCI Data Science",
     description=api_description,
     version=SERVER_VERSION,
     contact={
@@ -221,7 +221,7 @@ async def health_check(probe_type: str = Header(default=None)): # =Py 3.8/3.9
 
     Returns
     -------
-    dict: Current health status of Multi Model Inference Server
+    dict: Current health status of Model Inference Server
 
     """
 
@@ -358,7 +358,7 @@ async def load_model(model_id):
     if slug_name != os.getenv('CONDA_HOME'):
         err_detail = {
             "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
-            "err_detail": "Check the Slug name in the model taxonomy. The slug name should match the Conda environment of the multi model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
+            "err_detail": "Check the Slug name in the model taxonomy. The slug name should match the Conda environment of the model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
         }
         # return 400: Bad Request
         raise HTTPException(status_code=400, detail=err_detail)
@@ -586,7 +586,7 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
 
     Raises
     -------
-    HTTPException: An exception is thrown when 1) If uploaded file is not a zip file 2) If score.py or runtime.yaml is not present in the model artifact directory (after zip file is exploded) 3) If value of attribute 'inference_env_slug' in runtime.yaml is not the same as this server instance's conda env
+    HTTPException: An exception is thrown 1) If uploaded file is not a zip file 2) If score.py or runtime.yaml is not present in the model artifact directory (after zip file is exploded) 3) If value of attribute 'inference_env_slug' in runtime.yaml is not the same as this server instance's conda env
 
     Returns
     -------
@@ -651,7 +651,7 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         update_model_cache(model_name,model_id,delete=True)
         err_detail = {
             "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
-            "err_detail": "The 'INFERENCE_ENV_SLUG' value in 'runtime.yaml' file does not match the Conda environment of the multi model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
+            "err_detail": "The 'INFERENCE_ENV_SLUG' value in 'runtime.yaml' file does not match the Conda environment of the model server instance. You can check the Conda environment of this model server instance by invoking the '/serverinfo/' endpoint."
         }
         # return 400: Bad Request
         raise HTTPException(status_code=400, detail=err_detail)
