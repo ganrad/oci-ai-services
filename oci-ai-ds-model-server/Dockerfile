@@ -80,6 +80,11 @@ ENV UVICORN_LOG_LEVEL=info
 # (Optional) Uvicorn Server listen port - Default 8000
 ENV UVICORN_PORT=8000
 
+# Update to latest version
+RUN yum update -y
+RUN yum update -y openssl
+RUN yum openssl version
+
 # Create the conda environment workdir = /envs
 WORKDIR /envs
 
