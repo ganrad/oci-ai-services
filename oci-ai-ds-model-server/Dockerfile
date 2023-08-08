@@ -85,8 +85,7 @@ WORKDIR /envs
 
 # Download the ML conda environment (gzip tar file) using OCI Obj. Storage PAR 
 # URL
-# RUN curl -X GET $condaurl --output $condaenv.tar.gz
-RUN curl -X GET "https://get.helm.sh/helm-v3.12.2-linux-amd64.tar.gz" --output $condaenv.tar.gz
+RUN curl -X GET "$condaurl" --output $condaenv.tar.gz
 
 # Create the conda env directory
 RUN mkdir $condaenv 
