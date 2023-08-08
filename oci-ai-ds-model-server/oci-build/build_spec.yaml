@@ -39,7 +39,7 @@
 # Dated: 02-05-2023
 #
 # Updates:
-#
+# ID080823: ganrad01: Updated docker build command.
 # ---------------------------------------------------------------------------
 
 version: 0.1
@@ -85,7 +85,7 @@ steps:
       echo "Image tag name set to: ${tag_name}"
       echo "Starting the model server image build ..."
       # docker build -t oci-ds-model-server ./oci-ai-ds-model-server
-      docker build --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" --build-arg host_type=${container_host} --build-arg commit_hash=$OCI_PRIMARY_SOURCE_COMMIT_HASH --build-arg pipeline_id=$OCI_PIPELINE_ID --build-arg build_id=$OCI_BUILD_RUN_ID -t oci-ds-model-server ./oci-ai-ds-model-server
+      docker build --network host --build-arg condaurl="$condaurl" --build-arg condaenv="${conda_env}" --build-arg oci_config_filepath="./config" --build-arg oci_pem_filepath="./oci-api.pem" --build-arg host_type=${container_host} --build-arg commit_hash=$OCI_PRIMARY_SOURCE_COMMIT_HASH --build-arg pipeline_id=$OCI_PIPELINE_ID --build-arg build_id=$OCI_BUILD_RUN_ID -t oci-ds-model-server ./oci-ai-ds-model-server
       echo "Image build completed OK"
    
 outputArtifacts:
