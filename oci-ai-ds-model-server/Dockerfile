@@ -35,7 +35,7 @@
 # -------------------------------------------
 #
 # FROM oraclelinux:9
-FROM public.ecr.aws/docker/library/oraclelinux:9oraclelinux:9
+FROM public.ecr.aws/docker/library/oraclelinux:9
 LABEL name="OCI Data Science model server"
 LABEL version="1.0"
 LABEL description="This container image exposes API endpoints for a) Loading pre-trained ML models registered in OCI Data Science Model Catalog and b) Performing inference with live data"
