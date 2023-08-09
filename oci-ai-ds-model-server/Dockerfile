@@ -96,7 +96,7 @@ WORKDIR /envs
 # Download the ML conda environment (gzip tar file) using OCI Obj. Storage PAR 
 # URL
 # RUN curl -X GET "$condaurl" --output $condaenv.tar.gz
-RUN wget "$condaurl" > "$condaenv.tar.gz"
+RUN wget "$condaurl" --output-document $condaenv.tar.gz
 
 # Create the conda env directory
 RUN mkdir $condaenv 
