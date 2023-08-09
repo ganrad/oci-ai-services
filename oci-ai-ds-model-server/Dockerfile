@@ -83,7 +83,7 @@ ENV UVICORN_PORT=8000
 # Update to latest version
 RUN yum update -y
 RUN yum update -y openssl
-RUN yum openssl version
+RUN openssl version
 
 # Create the conda environment workdir = /envs
 WORKDIR /envs
