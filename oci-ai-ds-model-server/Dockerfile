@@ -80,17 +80,23 @@ ENV UVICORN_LOG_LEVEL=info
 # (Optional) Uvicorn Server listen port - Default 8000
 ENV UVICORN_PORT=8000
 
-# Update to latest version
+# Update container OS libraries
 RUN yum update -y
 RUN yum update -y openssl
+
+# Print openssl version
 RUN openssl version
+
+# Install wget
+RUN yum install -y wget
 
 # Create the conda environment workdir = /envs
 WORKDIR /envs
 
 # Download the ML conda environment (gzip tar file) using OCI Obj. Storage PAR 
 # URL
-RUN curl -X GET "$condaurl" --output $condaenv.tar.gz
+# RUN curl -X GET "$condaurl" --output $condaenv.tar.gz
+RUN wget "$condaurl" > $condaenv.tar.gz
 
 # Create the conda env directory
 RUN mkdir $condaenv 
