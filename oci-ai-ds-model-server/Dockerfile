@@ -31,7 +31,7 @@
 # outcomes.
 #
 # NOTES:
-#
+# ID080923: ganrad01 : Replaced 'curl' with 'wget' for downloading the conda pack
 # -------------------------------------------
 #
 # FROM oraclelinux:9
@@ -80,14 +80,7 @@ ENV UVICORN_LOG_LEVEL=info
 # (Optional) Uvicorn Server listen port - Default 8000
 ENV UVICORN_PORT=8000
 
-# Update container OS libraries
-# RUN yum update -y
-# RUN yum update -y openssl
-
-# Print openssl version
-# RUN openssl version
-
-# Install wget
+# Install wget - ID080923.n
 RUN yum install -y wget
 
 # Create the conda environment workdir = /envs
@@ -95,7 +88,7 @@ WORKDIR /envs
 
 # Download the ML conda environment (gzip tar file) using OCI Obj. Storage PAR 
 # URL
-# RUN curl -X GET "$condaurl" --output $condaenv.tar.gz
+# RUN curl -X GET "$condaurl" --output $condaenv.tar.gz - ID080923.o
 RUN wget "$condaurl" --output-document $condaenv.tar.gz
 
 # Create the conda env directory
