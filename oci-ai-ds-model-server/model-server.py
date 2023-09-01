@@ -354,7 +354,7 @@ async def load_model(model_id):
 
     # NOTE: slug_name should not be empty. Should be set to the conda env name!!
 
-    logger.debug(f"load_model(): SlugName: {slug_name}")
+    logger.info(f"load_model(): SlugName: {slug_name}")
     if slug_name != os.getenv('CONDA_HOME'):
         err_detail = {
             "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
