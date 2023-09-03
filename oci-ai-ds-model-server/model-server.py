@@ -39,6 +39,7 @@ Notes:
 """
 
 from importlib.metadata import version
+import aiofiles
 import datetime
 import importlib.util
 import json
@@ -47,6 +48,7 @@ import os
 import shutil
 import sys
 import time
+import traceback
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -595,7 +597,6 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
     """
 
     artifact_file = file.filename
-    file_obj = file.file
     file_content_type = file.content_type
 
     logger.info(f"upload_model(): File sent in upload: {artifact_file}")
@@ -612,38 +613,43 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
 
     # Create the model artifact directory
     zfile_path =  "./" + model_id
-    if not os.path.isdir(zfile_path):
+    if not os.path.exists(zfile_path):
         os.makedirs(zfile_path)
         update_model_cache(model_name,model_id)
-        logger.debug("upload_model(): Created model artifact directory")
+        logger.info("upload_model(): Created model artifact directory")
+        #print("Current Directory")
+        #print(os.getcwd())
+        #print("Directory listing")
+        #print(os.listdir("./"))
     else:
         shutil.rmtree(zfile_path)
         os.makedirs(zfile_path)
         update_model_cache(model_name,model_id,loaded=True)
-        logger.debug("upload_model(): Deleted model artifact directory & recreated it")
+        logger.info("upload_model(): Deleted model artifact directory & recreated it")
 
     # ID090223.sn
     try:
-        with open(artifact_file, 'wb') as f:
-            while contents := await file_obj.read(1024 * 1024):
-                f.write(contents)
-    except Exception:
+        async with aiofiles.open(artifact_file, 'wb') as f:
+            while contents := await file.read(1024 * 1024):
+                await f.write(contents)
+    except Exception as e:
         update_model_cache(model_name,model_id,delete=True)
+        logger.error(f"upload_model(): Encountered exception: {e}")
+        print(traceback.format_exc())
         err_detail = {
             "err_message": "There was an error uploading the file!",
-            "err_detail": "Unable to process the request"
+            "err_detail": str(e)
         }
         # return 500: Internal server error
         raise HTTPException(status_code=500, detail=err_detail)
     finally:
-        file_obj.close()
+        await file.close()
     # ID090223.en
 
     # Unzip the model artifact file into the model id folder -
-    # with ZipFile(file_obj,'r') as zfile:
     with ZipFile(artifact_file,'r') as zfile:
         zfile.extractall(zfile_path)
-    logger.debug(f"upload_model(): Extracted model artifacts from uploaded zip file into directory: {zfile_path}")
+        logger.info(f"upload_model(): Extracted model artifacts from uploaded zip file into directory: {zfile_path}")
 
     # Check to see if the model directory contains a 'score.py' and 
     # 'runtime.yaml' file
@@ -651,9 +657,10 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
     rtime_file = Path("{}/runtime.yaml".format(zfile_path))
     if not score_file.is_file() or not rtime_file.is_file():
         shutil.rmtree(zfile_path)
+        os.remove(artifact_file)
         update_model_cache(model_name,model_id,delete=True)
         err_detail = {
-            "err_message": "Zip file contents are corrupted and/or unrecognizable!",
+            "err_message": "Zip file does not contain 'score.py' and/or 'runtime.yaml'!  These are required files.  Zip file contents could be corrupted!",
             "err_detail": "Unable to process the request"
         }
         # return 422: Unprocessable content
@@ -665,9 +672,11 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         runtime_info = yaml.safe_load(f)
     
     slug_name = runtime_info['MODEL_DEPLOYMENT']['INFERENCE_CONDA_ENV']['INFERENCE_ENV_SLUG']
-    # print(f"SLUG NAME: {slug_name}")
+    logger.info(f"upload_model(): INFERENCE_ENV_SLUG attribute value in runtime.yaml: {slug_name}")
+
     if slug_name != os.getenv('CONDA_HOME'):
         shutil.rmtree(zfile_path)
+        os.remove(artifact_file)
         update_model_cache(model_name,model_id,delete=True)
         err_detail = {
             "err_message": f"Bad Request. Model Slug name: [{slug_name}] does not match Conda environment: [{os.getenv('CONDA_HOME')}]",
@@ -677,10 +686,10 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         raise HTTPException(status_code=400, detail=err_detail)
 
     resp_dict = {
+        "uploaded_file": artifact_file,
         "model_name": model_name,
         "model_ocid": model_id,
         "slug_name": slug_name,
-        "filename": artifact_file,
         "content_type": file_content_type,
         "model_upload_status": "OK"
     }
