@@ -572,7 +572,8 @@ async def score(model_id: str, data: dict = Body()):
     return results_data
 
 @app.post(api_endpoint + context_path + "/uploadmodel/", tags=["Upload Model"], status_code=201)
-async def upload_model(file: UploadFile, model_name: str = Form()):
+# async def upload_model(file: UploadFile, model_name: str = Form()):
+def upload_model(file: UploadFile, model_name: str = Form()):
     """Upload model artifacts to the inference server.  The server will cache it
     as long as it is alive.
 
