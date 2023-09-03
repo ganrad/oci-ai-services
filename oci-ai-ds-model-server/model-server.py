@@ -596,7 +596,9 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
 
     artifact_file = file.filename
     file_obj = file.file
-    logger.info(f"upload_model(): File to upload: {artifact_file}")
+    file_content_type = file.content_type
+
+    logger.info(f"upload_model(): File sent in upload: {artifact_file}")
 
     if not artifact_file.endswith(".zip"):
         err_detail = {
@@ -620,9 +622,27 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         update_model_cache(model_name,model_id,loaded=True)
         logger.debug("upload_model(): Deleted model artifact directory & recreated it")
 
+    # ID090223.sn
+    try:
+        with open(artifact_file, 'wb') as f:
+            while contents := await file_obj.read(1024 * 1024):
+                f.write(contents)
+    except Exception:
+        update_model_cache(model_name,model_id,delete=True)
+        err_detail = {
+            "err_message": "There was an error uploading the file!",
+            "err_detail": "Unable to process the request"
+        }
+        # return 500: Internal server error
+        raise HTTPException(status_code=500, detail=err_detail)
+    finally:
+        file_obj.close()
+    # ID090223.en
+
     # Unzip the model artifact file into the model id folder -
-    with ZipFile(file_obj,'r') as zfile:
-        await zfile.extractall(zfile_path)
+    # with ZipFile(file_obj,'r') as zfile:
+    with ZipFile(artifact_file,'r') as zfile:
+        zfile.extractall(zfile_path)
     logger.debug(f"upload_model(): Extracted model artifacts from uploaded zip file into directory: {zfile_path}")
 
     # Check to see if the model directory contains a 'score.py' and 
@@ -660,8 +680,8 @@ async def upload_model(file: UploadFile, model_name: str = Form()):
         "model_name": model_name,
         "model_ocid": model_id,
         "slug_name": slug_name,
-        "filename": file.filename,
-        "content_type": file.content_type,
+        "filename": artifact_file,
+        "content_type": file_content_type,
         "model_upload_status": "OK"
     }
 
