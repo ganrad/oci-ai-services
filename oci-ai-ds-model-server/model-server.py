@@ -572,8 +572,7 @@ async def score(model_id: str, data: dict = Body()):
     return results_data
 
 @app.post(api_endpoint + context_path + "/uploadmodel/", tags=["Upload Model"], status_code=201)
-# async def upload_model(file: UploadFile, model_name: str = Form()):
-def upload_model(file: UploadFile, model_name: str = Form()):
+async def upload_model(file: UploadFile, model_name: str = Form()):
     """Upload model artifacts to the inference server.  The server will cache it
     as long as it is alive.
 
@@ -623,7 +622,7 @@ def upload_model(file: UploadFile, model_name: str = Form()):
 
     # Unzip the model artifact file into the model id folder -
     with ZipFile(file_obj,'r') as zfile:
-        zfile.extractall(zfile_path)
+        await zfile.extractall(zfile_path)
     logger.debug(f"upload_model(): Extracted model artifacts from uploaded zip file into directory: {zfile_path}")
 
     # Check to see if the model directory contains a 'score.py' and 
