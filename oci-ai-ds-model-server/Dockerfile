@@ -32,7 +32,8 @@
 #
 # NOTES:
 # ID080923: ganrad01 : Replaced 'curl' with 'wget' for downloading the conda pack
-# -------------------------------------------
+# ID090823: ganrad01 : Install curl, git, git lfs and fontconfig
+# ----------------------------------------------------------------
 #
 # FROM oraclelinux:9
 FROM public.ecr.aws/docker/library/oraclelinux:9
@@ -79,6 +80,19 @@ ENV UVICORN_LOG_LEVEL=info
 
 # (Optional) Uvicorn Server listen port - Default 8000
 ENV UVICORN_PORT=8000
+
+# Update yum, Install curl, git & fontconfig = required for llm's - ID090823.n
+RUN yum -y update; \
+    yum install -y curl; \
+    yum install -y git; \
+    yum install -y fontconfig; \
+    yum clean all -y
+
+# Install git lfs = required for llm's - ID090823.n
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | yum install git-lfs -y
+
+# Install git lfs = required for llm's - ID090823.n
+RUN git lfs install
 
 # Install wget - ID080923.n
 RUN yum install -y wget

@@ -1,0 +1,100 @@
+# -------------------------------------------
+# Copyright (c) 2023 OCI-AI-CE
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# -------------------------------------------
+# A sidecar server that downloads ML/LLM model artifacts from OCI Object 
+# Storage and saves it in the model server's backend/repository.
+#
+# Description: This dockerfile builds a sidecar server container image for 
+# loading pre-trained ML/LLM models from OCI OS into the model server's 
+# backend/repository
+#
+# Dated: 09-12-2023
+#
+# NOTES:
+# -------------------------------------------
+#
+FROM public.ecr.aws/docker/library/oraclelinux:9
+LABEL name="Sidecar server"
+LABEL version="1.0"
+LABEL description="This container image runs a sidecar server to process model load requests"
+LABEL author="Ganesh Radhakrishnan" email="ganrad01@gmail.com" dated="09-12-2023" license="MIT"
+
+# Install python 3
+RUN yum install -y python3
+# Print python3 version
+RUN python3 --version
+# Install python3-pip
+RUN yum install -y python3-pip
+# Install virtualenv
+RUN pip install virtualenv
+
+# Set cwd to /penvs
+WORKDIR /penvs
+
+# Install OCI Python SDK in a separate venv
+RUN virtualenv oci_sdk_env
+# RUN source ./oci_sdk_env/bin/activate
+# RUN pip install oci
+# Install Py dependencies
+# RUN pip install pyyaml requests
+
+# Update yum, Install curl, git & fontconfig = required for llm's
+RUN yum -y update; \
+    yum install -y curl; \
+    yum install -y git; \
+    yum clean all -y
+
+# Install git lfs = required for llm's
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | yum install git-lfs -y
+
+# Check git lfs installation
+RUN git lfs --version
+
+# Install git lfs = required for llm's
+RUN git lfs install
+
+# (Required) OCI CLI/SDK config & pem file paths have to passed in during 
+# container build time
+ARG oci_config_filepath # Path to OCI Client Config file
+ARG oci_pem_filepath # Path to OCI Client PEM file
+
+# ### Following env variables can be overriden by user at run time ###
+
+# OCI Config file location
+ENV OCI_CONFIG_FILE_LOCATION=$oci_config_filepath
+
+# Create the apps workdir = /apps
+WORKDIR /apps
+
+# Copy the API server to the container image
+COPY ./sidecar-reqs.txt .
+COPY ./sidecar-server.py .
+
+# Copy the OCI config and pem file to the container image
+COPY $oci_config_filepath .
+COPY $oci_pem_filepath .
+
+# Set the default shell (bash) and then run the model server
+SHELL ["/bin/bash","-c"]
+ENTRYPOINT source /penvs/oci_sdk_env/bin/activate && \
+           pip install -r /apps/sidecar-reqs.txt && \
+           python3 sidecar-server.py

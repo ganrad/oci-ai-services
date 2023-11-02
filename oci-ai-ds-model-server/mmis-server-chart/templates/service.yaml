@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # name: {{ include "mims-server-chart.fullname" . }}
+  name: {{ .Values.service.name }}
+  labels:
+    {{- include "mims-server-chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "mims-server-chart.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mis-res-mgr
+  labels:
+    app: mis-res-mgr
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: mis-res-mgr
+

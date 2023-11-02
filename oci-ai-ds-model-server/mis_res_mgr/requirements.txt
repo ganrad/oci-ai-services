@@ -1,0 +1,3 @@
+fastapi[all]
+requests
+psycopg2-binary
