@@ -1,0 +1,86 @@
+Llama 2 7b Examples
+———————————
+Model-Id: llama-2-7b-hf
+{ "prompt" : "Born in north-east France, Soyer trained as a" }
+
+Response:
+{
+  "data": {
+    "generated_text": "Born in north-east France, Soyer trained as a painter at the École des Beaux-Arts in Paris. He was awarded a Prix de Rome in 1901 and spent the next three years studying at the Villa Medici in Rome. On his return he began teaching at the Académie Julian and at the École des Beaux-Arts. He became a member of the Société des Artistes Français in 1906 and was awarded the Prix de Rome in 1907. He also worked as a journalist and illustrator for a number of publications, including _L'Illustration_ and _L'Art et les Artistes_.\nSoyer's work was influenced by the Symbolists, especially the poet Stéphane Mallarmé, whose writings he illustrated. He also admired the work of the Italian Symbolist painter, Giovanni Segantini. He was one of the founders of the Salon d'Automne in 1903 and became a member of the jury in 1906. He was also a member of the Salon des Indépendants and of the Société Nationale des Beaux-Arts.\nSoyer's paintings were often inspired by his travels in France and Italy. He is particularly well-known for his landscapes, which are characterized by their rich colours and atmospheric lighting.\nSoyer's work was exhibited in a number of important exhibitions, including the Salon des Indépendants, the Salon d'Automne, the Salon des Artistes Français, and the Exposition Universelle in Paris in 1900.fd\n\n## External links\n\n* More works by Soyer on ArtNet"
+  },
+  "load_time": 0,
+  "inference_time": 54.09480619430542
+}
+
+{ "prompt" : "Patients suffering from Diabetes are vulnerable to" }
+{
+  "data": {
+    "generated_text": "Patients suffering from Diabetes are vulnerable to a wide range of complications. The most common complications include:\nDiabetic neuropathy is a nerve damage caused by diabetes. This condition is caused by the high blood sugar levels. The high blood sugar damages the nerves and the blood vessels. This patchy damage causes numbness and tingling in the feet and hands. This condition can be very painful and can even lead to amputations.\nDiabetic neuropathy is more common in people who have been suffering from diabetes for a long period of time. It is also more common in people who have poorly controlled blood sugar levels.\nDiabetic neuropathy is a serious condition that can lead to amputations and other serious complications. If you are suffering from diabetes, it is important to control your blood sugar levels and to take care of your feet.\nDiabetic neuropathy is a common complication of diabetes. It can cause a wide range of symptoms, including numbness, tingling, and pain in the feet. Diabetic neuropathy is caused by damage to the nerves in the feet. This damage can be caused by high blood sugar levels, which can damage the nerves. Diabetic neuropathy is more common in people who have been diagnosed with diabetes"
+  },
+  "load_time": 0,
+  "inference_time": 42.988823652267456
+}
+{ "prompt" : "Machine learning is" }
+{
+  "data": {
+    "generated_text": "Machine learning is a branch of artificial intelligence (AI) that enables computers to learn from data, identify patterns, and make decisions without being explicitly programmed.\nMachine learning algorithms are used in a variety of applications, including image recognition, natural language processing, and fraud detection.\nIn this article, we will explore the basics of machine learning and how it is used in real-world applications.\nWe will also discuss the different types of machine learning algorithms and their applications.\nMachine learning is a branch of artificial intelligence (AI) that enables computers to learn from data, identify patterns, and make decisions without being explicitly programmed.\nMachine learning algorithms are used in a variety of applications, including image recognition, natural language processing, and fraud detection. In this article, we will explore the basics of machine learning and how it is used in real-world applications.\nWe will also discuss the different types of machine learning algorithms and their applications.\nMachine learning is a branch of artificial intelligence that enables computers to learn from data, identify patterns, and make decisions without being explicitly programmed.\nMachine learning algorithms are used in a variety of applications, including image recognition, natural language processing, and fraud detection.\nIn this article, we will explore the basics of machine learning and how it is used in real-world applications. We will also discuss the different types of machine learning algorithms and their applications.\nMachine learning is a branch of artificial"
+  },
+  "load_time": 0,
+  "inference_time": 41.44733953475952
+}
+
+—————
+{ "prompt": "The internet allows people to", "params": {"min_length": 100, "max_length": 200, "top_k": 5} }
+{
+  "data": {
+    "generated_text": "The internet allows people to share information, connect with others, and express their opinions.\nBut with the rise of social media, there has been a growing concern about the potential for online harassment.\nThis has led to a number of new laws and regulations aimed at protecting people from online abuse.\nThe most recent of these is the new law in the UK that will make it illegal to send abusive or threatening messages to someone on social media.\nThe new law, which was passed by the House of Commons on Wednesday, will apply to all social media platforms, including Facebook, Twitter, and Instagram.\nThe new law comes after a series of high-profile cases where people have been targeted by online abuse.\nIn the past year, there have been more than 100 reports of online harassment in the UK, including a number involving children.\nIn the US, there are more than 2"
+  },
+  "load_time": 0,
+  "inference_time": 29.149769067764282
+}
+
+{ "prompt" : "Kubernetes can be used for" }
+{
+  "data": {
+    "generated_text": "Kubernetes can be used for more than just container orchestration. The platform also offers a variety of features that make it an attractive choice for building highly available systems. In this article, we’ll explore how Kubernetes can be used to build highly available systems and how it compares to other options.\nWhat is Kubernetes and how does it work?\nKubernetes is an open-source container orchestration platform. It was originally developed by Google and is now maintained by the Cloud Native Computing Foundation. Kubernetes allows developers to easily deploy, scale, and manage containerized applications. It is also highly fault-tolerant, making it an ideal choice for building highly available systems.\nKubernetes offers a variety of features that make it an attractive choice for building highly available systems. These features include:\nKubernetes is highly fault-tolerant. This means that if one node in the cluster goes down, the system will continue to run.\nKubernetes is highly scalable. This means that you can easily add or remove nodes from the cluster as needed.\nKubernetes is highly available. This means that if one node in the cluster goes down, the system will continue to run.\nKubernetes is highly secure. This means that your data is protected from unauthorized access.\nKubernetes is highly efficient. This means that your system will use less resources and run faster.\nKubernetes is highly customizable. This means that you can easily configure the platform to meet your specific needs.\nKubernetes is highly reliable. This means that your system will always be available.\nKubernetes is highly portable. This means that you can easily move your system from one environment to another.\nKubernetes is highly cost-effective. This means that you can save money by using the platform.\nKubernetes is highly scalable. This means that you can easily add or remove nodes from the cluster as needed.\nKubernetes is highly available. This means that if one node in the cluster goes down, the system will continue to run.\nKubernetes is highly secure. This means that your data is protected from unauthorized access.\nKubernetes is highly efficient. This means that your system will use less resources and run faster.\nKubernetes is highly customizable. This means that you can easily configure the platform to meet your specific needs.\nKubernetes is highly reliable. This means that your"
+  },
+  "inference_time": 92.2035346031189
+}
+
+—————
+Bertscore examples
+———————
+{ "references": ["We value your opinion"], "predictions": ["Take 10 minutes to share your thoughts with us in this short survey"] }
+{
+  "data": {
+    "references": [
+      "We value your opinion"
+    ],
+    "predictions": [
+      "Take 10 minutes to share your thoughts with us in this short survey"
+    ],
+    "results": {
+      "precision": [
+        0.7392492294311523
+      ],
+      "recall": [
+        0.8307152986526489
+      ],
+      "f1": [
+        0.7823178768157959
+      ],
+      "hashcode": "distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.33.1)"
+    }
+  },
+  "inference_time": 1.6158277988433838
+}
+
+—————————
+Falcon 7b example
+—————————
+{ "prompt" : "The internet was invented by" }
+
+————————
+Roberta base example
+————————
+{ "text": "Israel's war against Hamas is turning out to be a bloodshed resulting in civilian casualties" }
